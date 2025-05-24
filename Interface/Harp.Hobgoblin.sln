@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{063F4403-1190-43B3-8BC7-0B17980E33E0}") = "Harp.Hobgoblin", "Harp.Hobgoblin\Harp.Hobgoblin.csproj", "{7218B25B-9B6D-4177-9515-363406CCDB5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7218B25B-9B6D-4177-9515-363406CCDB5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7218B25B-9B6D-4177-9515-363406CCDB5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7218B25B-9B6D-4177-9515-363406CCDB5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7218B25B-9B6D-4177-9515-363406CCDB5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1065240F-ADB4-4C0A-B9A0-0897B33DE874}
+	EndGlobalSection
+EndGlobal
