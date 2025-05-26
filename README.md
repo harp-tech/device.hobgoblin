@@ -1,6 +1,8 @@
 # Harp Hobgoblin
 
-This repository contains the device metadata, firmware and high-level interface to the Hobgoblin device. Below are simple getting started instructions for maintainers to create a new device using the automatic code generators.
+A simple multi-purpose device for learning the basics of the Harp standard. Although the repository contains working device metadata, firmware and high-level interface, the Harp Hobgoblin device is made to be adapted and modified for a variety of purposes.
+
+Below are simple getting started instructions for maintainers to create a new device using the automatic code generators.
 
 ## Editing device metadata
 
