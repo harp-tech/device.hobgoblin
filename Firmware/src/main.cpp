@@ -3,7 +3,7 @@
 #include <harp_synchronizer.h>
 #include <core_registers.h>
 #include <reg_types.h>
-#include "hardware/gpio.h"
+#include <hardware/gpio.h>
 
 // Create device name array.
 const uint16_t who_am_i = 123;
@@ -17,12 +17,23 @@ const uint8_t fw_version_minor = 1;
 const uint16_t serial_number = 0x0;
 
 // Harp App Register Setup.
-const size_t reg_count = 5;
+const size_t reg_count = 7;
 
 // Hobgoblin device setup
 const uint32_t DO0_PIN = 15;
 const uint32_t DI_MASK = 0x700C;
 const uint32_t DO_MASK = 0xFF << DO0_PIN;
+
+// Repeating timers for pulse control
+const size_t pulse_train_count = 256;
+struct pulse_train_t
+{
+    struct repeating_timer timer;
+    uint8_t pwm_output;
+    uint32_t pulse_width_us;
+    uint32_t pulse_count;
+};
+pulse_train_t pulse_train_timers[pulse_train_count];
 
 // Define register contents.
 #pragma pack(push, 1)
@@ -33,6 +44,8 @@ struct app_regs_t
     volatile uint8_t do_clear;
     volatile uint8_t do_toggle;
     volatile uint8_t do_state;
+    volatile uint32_t start_pulse_train[4];
+    volatile uint8_t stop_pulse_train;
 } app_regs;
 #pragma pack(pop)
 
@@ -43,7 +56,9 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.do_set, sizeof(app_regs.do_set), U8},
     {(uint8_t*)&app_regs.do_clear, sizeof(app_regs.do_clear), U8},
     {(uint8_t*)&app_regs.do_toggle, sizeof(app_regs.do_toggle), U8},
-    {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8}
+    {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8},
+    {(uint8_t*)&app_regs.start_pulse_train, sizeof(app_regs.start_pulse_train), U32},
+    {(uint8_t*)&app_regs.stop_pulse_train, sizeof(app_regs.stop_pulse_train), U8},
 };
 
 void gpio_callback(uint gpio, uint32_t events)
@@ -83,6 +98,65 @@ void write_do_state(msg_t &msg)
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+int64_t pulse_callback(alarm_id_t id, void *user_data)
+{
+    uint8_t pwm_output = (uint8_t)(intptr_t)user_data;
+    app_regs.do_clear = pwm_output;
+    gpio_clr_mask(pwm_output << DO0_PIN);
+    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 2);
+    return 0;
+}
+
+bool pulse_train_callback(repeating_timer_t *rt)
+{
+    // for every pulse in the pulse train, arm an alarm matching the pulse width
+    pulse_train_t *pulse_train = (pulse_train_t *)rt->user_data;
+    add_alarm_in_us(
+        pulse_train->pulse_width_us,
+        pulse_callback,
+        (void *)(intptr_t)pulse_train->pwm_output,
+        true);
+
+    gpio_set_mask(pulse_train->pwm_output << DO0_PIN);
+    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 1);
+
+    // stop pulse train if positive counter falls to zero;
+    // counters which started zero or negative repeat indefinitely
+    return pulse_train->pulse_count <= 0 ||
+           --pulse_train->pulse_count > 0;
+}
+
+void write_start_pulse_train(msg_t& msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t pwm_output = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
+    uint32_t pulse_width_us = app_regs.start_pulse_train[1];
+    int64_t pulse_period_us = app_regs.start_pulse_train[2];
+    uint32_t pulse_count = app_regs.start_pulse_train[3];
+    pulse_train_timers[pwm_output].pwm_output = pwm_output;
+    pulse_train_timers[pwm_output].pulse_width_us = pulse_width_us;
+    pulse_train_timers[pwm_output].pulse_count = pulse_count;
+
+    cancel_repeating_timer(&pulse_train_timers[pwm_output].timer);
+    add_repeating_timer_us(
+        -pulse_period_us,
+        pulse_train_callback,
+        &pulse_train_timers[pwm_output],
+        &pulse_train_timers[pwm_output].timer);
+
+    HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+void write_stop_pulse_train(msg_t& msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+
+    uint8_t pwm_output = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
+    cancel_repeating_timer(&pulse_train_timers[pwm_output].timer);
+
+    HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
 // Define register read-and-write handler functions.
 RegFnPair reg_handler_fns[reg_count]
 {
@@ -90,7 +164,9 @@ RegFnPair reg_handler_fns[reg_count]
     {&HarpCore::read_reg_generic, &write_do_set},
     {&HarpCore::read_reg_generic, &write_do_clear},
     {&HarpCore::read_reg_generic, &write_do_toggle},
-    {&HarpCore::read_reg_generic, &write_do_state}
+    {&HarpCore::read_reg_generic, &write_do_state},
+    {&HarpCore::read_reg_generic, &write_start_pulse_train},
+    {&HarpCore::read_reg_generic, &write_stop_pulse_train}
 };
 
 void app_reset()
@@ -100,6 +176,11 @@ void app_reset()
     app_regs.do_clear = 0;
     app_regs.do_toggle = 0;
     app_regs.do_state = 0;
+    app_regs.start_pulse_train[0] = 0;
+    app_regs.start_pulse_train[1] = 0;
+    app_regs.start_pulse_train[2] = 0;
+    app_regs.start_pulse_train[3] = 0;
+    app_regs.stop_pulse_train = 0;
 }
 
 void update_app_state()
