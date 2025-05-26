@@ -4,9 +4,50 @@
 device: Hobgoblin
 whoAmI: 123
 firmwareVersion: "0.1"
-hardwareTargets: "0.0"
+hardwareTargets: "1.0"
 registers:
-  DigitalInputs:
+  DigitalInputState:
     address: 32
     type: U8
     access: Event
+    maskType: DigitalInputs
+    description: Reflects the state of the digital input lines.
+  DigitalOutputSet: &doutput
+    address: 33
+    type: U8
+    access: Write
+    maskType: DigitalOutputs
+    description: Sets the specified digital output lines.
+  DigitalOutputClear:
+    <<: *doutput
+    address: 34
+    access: Write
+    description: Clears the specified digital output lines.
+  DigitalOutputToggle:
+    <<: *doutput
+    address: 35
+    description: Toggles the specified digital output lines.
+  DigitalOutputState:
+    <<: *doutput
+    address: 36
+    description: Writes the state of all digital output lines.
+bitMasks:
+  DigitalInputs:
+    description: Specifies the state of port digital input lines.
+    bits:
+      GP2: 0x1
+      GP3: 0x2
+      GP12: 0x4
+      GP13: 0x8
+      GP14: 0x10
+  DigitalOutputs:
+    description: Specifies the state of port digital output lines.
+    bits:
+      GP15: 0x1
+      GP16: 0x2
+      GP17: 0x4
+      GP18: 0x8
+      GP19: 0x10
+      GP20: 0x20
+      GP21: 0x40
+      GP22: 0x80
