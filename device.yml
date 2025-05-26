@@ -36,13 +36,13 @@ registers:
     type: U32
     length: 4
     access: Write
-    description: Starts a pulse train on the specified digital output line.
+    description: Starts a pulse train driving the specified digital output lines.
     payloadSpec:
       DigitalOutput:
         offset: 0
         mask: 0xFF
         maskType: DigitalOutputs
-        description: Specifies the digital output lines on which to run each pulse of the pulse train.
+        description: Specifies the digital output lines set by each pulse of the pulse train.
       PulseWidth:
         offset: 1
         defaultValue: 500000
@@ -58,7 +58,7 @@ registers:
   StopPulseTrain:
     address: 38
     type: U8
-    access: Write
+    access: [Write, Event]
     maskType: DigitalOutputs
     description: Stops the pulse train running on the specified digital output lines.
 bitMasks:
