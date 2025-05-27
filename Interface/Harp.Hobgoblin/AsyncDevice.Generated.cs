@@ -263,5 +263,97 @@ namespace Harp.Hobgoblin
             var request = DigitalOutputState.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the StartPulseTrain register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the register payload.
+        /// </returns>
+        public async Task<StartPulseTrainPayload> ReadStartPulseTrainAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPulseTrain.Address), cancellationToken);
+            return StartPulseTrain.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the StartPulseTrain register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<StartPulseTrainPayload>> ReadTimestampedStartPulseTrainAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPulseTrain.Address), cancellationToken);
+            return StartPulseTrain.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the StartPulseTrain register.
+        /// </summary>
+        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WriteStartPulseTrainAsync(StartPulseTrainPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = StartPulseTrain.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the StopPulseTrain register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the register payload.
+        /// </returns>
+        public async Task<DigitalOutputs> ReadStopPulseTrainAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(StopPulseTrain.Address), cancellationToken);
+            return StopPulseTrain.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the StopPulseTrain register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<DigitalOutputs>> ReadTimestampedStopPulseTrainAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(StopPulseTrain.Address), cancellationToken);
+            return StopPulseTrain.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the StopPulseTrain register.
+        /// </summary>
+        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WriteStopPulseTrainAsync(DigitalOutputs value, CancellationToken cancellationToken = default)
+        {
+            var request = StopPulseTrain.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
     }
 }

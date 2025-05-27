@@ -15,13 +15,13 @@ registers:
   DigitalOutputSet: &doutput
     address: 33
     type: U8
-    access: Write
+    access: [Write, Event]
     maskType: DigitalOutputs
     description: Sets the specified digital output lines.
   DigitalOutputClear:
     <<: *doutput
     address: 34
-    access: Write
+    access: [Write, Event]
     description: Clears the specified digital output lines.
   DigitalOutputToggle:
     <<: *doutput
@@ -31,6 +31,36 @@ registers:
     <<: *doutput
     address: 36
     description: Writes the state of all digital output lines.
+  StartPulseTrain:
+    address: 37
+    type: U32
+    length: 4
+    access: Write
+    description: Starts a pulse train driving the specified digital output lines.
+    payloadSpec:
+      DigitalOutput:
+        offset: 0
+        mask: 0xFF
+        maskType: DigitalOutputs
+        description: Specifies the digital output lines set by each pulse of the pulse train.
+      PulseWidth:
+        offset: 1
+        defaultValue: 500000
+        description: Specifies the duration in microseconds that each pulse is HIGH.
+      PulsePeriod:
+        offset: 2
+        defaultValue: 1000000
+        description: Specifies the interval in microseconds between each pulse in the pulse train.
+      PulseCount:
+        offset: 3
+        defaultValue: 1
+        description: Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.
+  StopPulseTrain:
+    address: 38
+    type: U8
+    access: [Write, Event]
+    maskType: DigitalOutputs
+    description: Stops the pulse train running on the specified digital output lines.
 bitMasks:
   DigitalInputs:
     description: Specifies the state of port digital input lines.
