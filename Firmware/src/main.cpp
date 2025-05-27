@@ -4,6 +4,8 @@
 #include <core_registers.h>
 #include <reg_types.h>
 #include <hardware/gpio.h>
+#include <hardware/adc.h>
+#include <hardware/dma.h>
 
 // Create device name array.
 const uint16_t who_am_i = 123;
@@ -17,12 +19,16 @@ const uint8_t fw_version_minor = 1;
 const uint16_t serial_number = 0x0;
 
 // Harp App Register Setup.
-const size_t reg_count = 7;
+const size_t reg_count = 8;
 
 // Hobgoblin device setup
 const uint32_t DO0_PIN = 15;
 const uint32_t DI_MASK = 0x700C;
 const uint32_t DO_MASK = 0xFF << DO0_PIN;
+const uint32_t AI0_PIN = 26;
+const uint32_t AI1_PIN = 27;
+const uint32_t AI2_PIN = 28;
+const uint32_t AI_MASK = 0x7;
 
 // Repeating timers for pulse control
 const size_t pulse_train_count = 256;
@@ -36,6 +42,13 @@ struct pulse_train_t
 };
 pulse_train_t pulse_train_timers[pulse_train_count];
 
+// Repeating timer and buffers for ADC sampling using 
+// Pointer to an address is required for the reinitialization DMA channel.
+uint8_t adc_vals[3] = {0, 1, 2};
+uint8_t* data_ptr[1] = {adc_vals};
+struct repeating_timer adc_timer;
+const int32_t adc_period_ms = 4;
+
 // Define register contents.
 #pragma pack(push, 1)
 struct app_regs_t
@@ -47,6 +60,7 @@ struct app_regs_t
     volatile uint8_t do_state;
     volatile uint32_t start_pulse_train[4];
     volatile uint8_t stop_pulse_train;
+    volatile uint8_t analog_data[3];
 } app_regs;
 #pragma pack(pop)
 
@@ -60,6 +74,7 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8},
     {(uint8_t*)&app_regs.start_pulse_train, sizeof(app_regs.start_pulse_train), U32},
     {(uint8_t*)&app_regs.stop_pulse_train, sizeof(app_regs.stop_pulse_train), U8},
+    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U8}
 };
 
 void gpio_callback(uint gpio, uint32_t events)
@@ -174,6 +189,15 @@ void write_stop_pulse_train(msg_t& msg)
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
+bool adc_callback(repeating_timer_t *rt)
+{
+    app_regs.analog_data[0] = adc_vals[0];
+    app_regs.analog_data[1] = adc_vals[1];
+    app_regs.analog_data[2] = adc_vals[2];
+    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7);
+    return true;
+}
+
 // Define register read-and-write handler functions.
 RegFnPair reg_handler_fns[reg_count]
 {
@@ -183,7 +207,8 @@ RegFnPair reg_handler_fns[reg_count]
     {&HarpCore::read_reg_generic, &write_do_toggle},
     {&HarpCore::read_reg_generic, &write_do_state},
     {&HarpCore::read_reg_generic, &write_start_pulse_train},
-    {&HarpCore::read_reg_generic, &write_stop_pulse_train}
+    {&HarpCore::read_reg_generic, &write_stop_pulse_train},
+    {&HarpCore::read_reg_generic, &HarpCore::write_to_read_only_reg_error}
 };
 
 void app_reset()
@@ -235,6 +260,79 @@ void configure_gpio(void)
     irq_set_enabled(IO_IRQ_BANK0, true);
 }
 
+void configure_adc(void)
+{
+    adc_gpio_init(AI0_PIN);
+    adc_gpio_init(AI1_PIN);
+    adc_gpio_init(AI2_PIN);
+
+    adc_init();
+    adc_set_clkdiv(0); // Run conversion back-to-back at full speed.
+    adc_set_round_robin(AI_MASK); // Enable round-robin sampling of all 3 inputs.
+    adc_select_input(0); // Set starting ADC channel for round-robin mode.
+    adc_fifo_setup(
+        true,    // Write each completed conversion to the sample FIFO
+        true,    // Enable DMA data request (DREQ)
+        1,       // DREQ (and IRQ) asserted when at least 1 sample present
+        false,   // We won't see the ERR bit because of 8 bit reads; disable.
+        true     // Shift each sample to 8 bits when pushing to FIFO
+    );
+
+    // Get two open DMA channels.
+    // sample_channel will sample the adc, paced by DREQ_ADC and chain to ctrl_channel.
+    // ctrl_channel will reconfigure & retrigger sample_channel when it finishes.
+    int sample_channel = dma_claim_unused_channel(true);
+    int ctrl_channel = dma_claim_unused_channel(true);
+    dma_channel_config sample_config = dma_channel_get_default_config(sample_channel);
+    dma_channel_config ctrl_config = dma_channel_get_default_config(ctrl_channel);
+
+    // Setup Sample Channel.
+    channel_config_set_transfer_data_size(&sample_config, DMA_SIZE_8);
+    channel_config_set_read_increment(&sample_config, false); // read from adc FIFO reg.
+    channel_config_set_write_increment(&sample_config, true);
+    channel_config_set_irq_quiet(&sample_config, true);
+    channel_config_set_dreq(&sample_config, DREQ_ADC); // pace data according to ADC
+    channel_config_set_chain_to(&sample_config, ctrl_channel);
+    channel_config_set_enable(&sample_config, true);
+
+    // Apply sample_channel configuration.
+    dma_channel_configure(
+        sample_channel,     // Channel to be configured
+        &sample_config,
+        nullptr,            // write (dst) address will be loaded by ctrl_chan.
+        &adc_hw->fifo,      // read (source) address. Does not change.
+        count_of(adc_vals), // Number of word transfers.
+        false               // Don't Start immediately.
+    );
+
+    // Setup Reconfiguration Channel
+    // This channel will Write the starting address to the write address
+    // "trigger" register, which will restart the DMA Sample Channel.
+    channel_config_set_transfer_data_size(&ctrl_config, DMA_SIZE_32);
+    channel_config_set_read_increment(&ctrl_config, false); // read a single uint32.
+    channel_config_set_write_increment(&ctrl_config, false);
+    channel_config_set_irq_quiet(&ctrl_config, true);
+    channel_config_set_dreq(&ctrl_config, DREQ_FORCE); // Go as fast as possible.
+    channel_config_set_enable(&ctrl_config, true);
+
+    // Apply reconfig channel configuration.
+    dma_channel_configure(
+        ctrl_channel,  // Channel to be configured
+        &ctrl_config,
+        &dma_hw->ch[sample_channel].al2_write_addr_trig, // dst address. Writing here retriggers samp_chan.
+        data_ptr,      // Read (src) address is a single array with the starting address.
+        1,             // Number of word transfers.
+        false          // Don't Start immediately.
+    );
+    dma_channel_start(ctrl_channel);
+    
+    // Start the ADC in free-running mode.
+    adc_run(true);
+
+    // Setup repeating timer for reporting values back to the host
+    add_repeating_timer_ms(adc_period_ms, adc_callback, NULL, &adc_timer);
+}
+
 // Core0 main.
 int main()
 {
@@ -242,6 +340,7 @@ int main()
     HarpSynchronizer& sync = HarpSynchronizer::init(uart1, 5);
     app.set_synchronizer(&sync);
     configure_gpio();
+    configure_adc();
     
     while(true)
     {
