@@ -18,10 +18,7 @@ const uint8_t fw_version_major = 0;
 const uint8_t fw_version_minor = 1;
 const uint16_t serial_number = 0x0;
 
-// Harp App Register Setup.
-const size_t reg_count = 8;
-
-// Hobgoblin device setup
+// Harp App setup.
 const uint32_t DO0_PIN = 15;
 const uint32_t DI_MASK = 0x700C;
 const uint32_t DO_MASK = 0xFF << DO0_PIN;
@@ -29,6 +26,9 @@ const uint32_t AI0_PIN = 26;
 const uint32_t AI1_PIN = 27;
 const uint32_t AI2_PIN = 28;
 const uint32_t AI_MASK = 0x7;
+
+// Harp App state.
+bool events_active = false;
 
 // Repeating timers for pulse control
 const size_t pulse_train_count = 256;
@@ -44,10 +44,13 @@ pulse_train_t pulse_train_timers[pulse_train_count];
 
 // Repeating timer and buffers for ADC sampling using 
 // Pointer to an address is required for the reinitialization DMA channel.
-uint8_t adc_vals[3] = {0, 1, 2};
+uint8_t adc_vals[3] = {0, 0, 0};
 uint8_t* data_ptr[1] = {adc_vals};
 struct repeating_timer adc_timer;
 const int32_t adc_period_ms = 4;
+
+// Harp App Register Setup.
+const size_t reg_count = 8;
 
 // Define register contents.
 #pragma pack(push, 1)
@@ -223,26 +226,10 @@ void app_reset()
     app_regs.start_pulse_train[2] = 0;
     app_regs.start_pulse_train[3] = 0;
     app_regs.stop_pulse_train = 0;
+    app_regs.analog_data[0] = 0;
+    app_regs.analog_data[1] = 0;
+    app_regs.analog_data[2] = 0;
 }
-
-void update_app_state()
-{
-    // update here!
-    // If app registers update their states outside the read/write handler
-    // functions, update them here.
-    // (Called inside run() function.)
-}
-
-// Create Harp App.
-HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
-                               assembly_version,
-                               harp_version_major, harp_version_minor,
-                               fw_version_major, fw_version_minor,
-                               serial_number, "Hobgoblin",
-                               (const uint8_t*)GIT_HASH, // in CMakeLists.txt.
-                               &app_regs, app_reg_specs,
-                               reg_handler_fns, reg_count, update_app_state,
-                               app_reset);
 
 void configure_gpio(void)
 {
@@ -257,7 +244,11 @@ void configure_gpio(void)
     gpio_set_irq_enabled(12, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(14, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
-    irq_set_enabled(IO_IRQ_BANK0, true);
+}
+
+void enable_gpio(bool enabled)
+{
+    irq_set_enabled(IO_IRQ_BANK0, enabled);
 }
 
 void configure_adc(void)
@@ -325,13 +316,65 @@ void configure_adc(void)
         false          // Don't Start immediately.
     );
     dma_channel_start(ctrl_channel);
-    
-    // Start the ADC in free-running mode.
-    adc_run(true);
+}
 
-    // Setup repeating timer for reporting values back to the host
+void enable_adc_events()
+{
+    // Start the ADC in free-running mode and setup repeating timer for
+    // reporting values back to the host.
+    adc_run(true);
     add_repeating_timer_ms(adc_period_ms, adc_callback, NULL, &adc_timer);
 }
+
+void disable_adc_events()
+{
+    // Cancel repeating timer, stop the ADC, clean up the FIFO
+    // and reset starting ADC channel for round-robin mode.
+    cancel_repeating_timer(&adc_timer);
+    adc_run(false);
+    adc_fifo_drain();
+    adc_select_input(0);
+}
+
+void cancel_pulse_timers()
+{
+    // Cancel any pulse train timer which might be still running
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        cancel_repeating_timer(&pulse_train_timers[i].timer);
+    }
+}
+
+void update_app_state()
+{
+    // Enable or disable asynchronous register updates depending on app state
+    if (!events_active && HarpCore::events_enabled())
+    {
+        // enable events
+        enable_gpio(true);
+        enable_adc_events();
+        events_active = true;
+    }
+    else if (events_active && !HarpCore::events_enabled())
+    {
+        // disable events
+        enable_gpio(false);
+        disable_adc_events();
+        cancel_pulse_timers();
+        events_active = false;
+    }
+}
+
+// Create Harp App.
+HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
+                               assembly_version,
+                               harp_version_major, harp_version_minor,
+                               fw_version_major, fw_version_minor,
+                               serial_number, "Hobgoblin",
+                               (const uint8_t*)GIT_HASH, // in CMakeLists.txt.
+                               &app_regs, app_reg_specs,
+                               reg_handler_fns, reg_count, update_app_state,
+                               app_reset);
 
 // Core0 main.
 int main()
