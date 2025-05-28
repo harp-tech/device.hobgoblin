@@ -1068,9 +1068,9 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents a register that voltage at the ADC inputs.
+    /// Represents a register that reports the sampled analog signal on each of the ADC input channels.
     /// </summary>
-    [Description("Voltage at the ADC inputs.")]
+    [Description("Reports the sampled analog signal on each of the ADC input channels.")]
     public partial class AnalogData
     {
         /// <summary>
@@ -1628,28 +1628,28 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that voltage at the ADC inputs.
+    /// that reports the sampled analog signal on each of the ADC input channels.
     /// </summary>
     [DisplayName("AnalogDataPayload")]
-    [Description("Creates a message payload that voltage at the ADC inputs.")]
+    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels.")]
     public partial class CreateAnalogDataPayload
     {
         /// <summary>
-        /// Gets or sets a value that the voltage at the output of the ADC channel 0.
+        /// Gets or sets a value that the analog value sampled from ADC channel 0.
         /// </summary>
-        [Description("The voltage at the output of the ADC channel 0.")]
+        [Description("The analog value sampled from ADC channel 0.")]
         public byte AnalogInput0 { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that the voltage at the output of the ADC channel 1.
+        /// Gets or sets a value that the analog value sampled from ADC channel 1.
         /// </summary>
-        [Description("The voltage at the output of the ADC channel 1.")]
+        [Description("The analog value sampled from ADC channel 1.")]
         public byte AnalogInput1 { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that the voltage at the output of the ADC channel 2.
+        /// Gets or sets a value that the analog value sampled from ADC channel 2.
         /// </summary>
-        [Description("The voltage at the output of the ADC channel 2.")]
+        [Description("The analog value sampled from ADC channel 2.")]
         public byte AnalogInput2 { get; set; }
 
         /// <summary>
@@ -1666,7 +1666,7 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Creates a message that voltage at the ADC inputs.
+        /// Creates a message that reports the sampled analog signal on each of the ADC input channels.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the AnalogData register.</returns>
@@ -1678,14 +1678,14 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that voltage at the ADC inputs.
+    /// that reports the sampled analog signal on each of the ADC input channels.
     /// </summary>
     [DisplayName("TimestampedAnalogDataPayload")]
-    [Description("Creates a timestamped message payload that voltage at the ADC inputs.")]
+    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels.")]
     public partial class CreateTimestampedAnalogDataPayload : CreateAnalogDataPayload
     {
         /// <summary>
-        /// Creates a timestamped message that voltage at the ADC inputs.
+        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
@@ -1767,9 +1767,9 @@ namespace Harp.Hobgoblin
         /// <summary>
         /// Initializes a new instance of the <see cref="AnalogDataPayload"/> structure.
         /// </summary>
-        /// <param name="analogInput0">The voltage at the output of the ADC channel 0.</param>
-        /// <param name="analogInput1">The voltage at the output of the ADC channel 1.</param>
-        /// <param name="analogInput2">The voltage at the output of the ADC channel 2.</param>
+        /// <param name="analogInput0">The analog value sampled from ADC channel 0.</param>
+        /// <param name="analogInput1">The analog value sampled from ADC channel 1.</param>
+        /// <param name="analogInput2">The analog value sampled from ADC channel 2.</param>
         public AnalogDataPayload(
             byte analogInput0,
             byte analogInput1,
@@ -1781,17 +1781,17 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// The voltage at the output of the ADC channel 0.
+        /// The analog value sampled from ADC channel 0.
         /// </summary>
         public byte AnalogInput0;
 
         /// <summary>
-        /// The voltage at the output of the ADC channel 1.
+        /// The analog value sampled from ADC channel 1.
         /// </summary>
         public byte AnalogInput1;
 
         /// <summary>
-        /// The voltage at the output of the ADC channel 2.
+        /// The analog value sampled from ADC channel 2.
         /// </summary>
         public byte AnalogInput2;
 
