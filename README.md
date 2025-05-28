@@ -17,6 +17,11 @@ The Harp Hobgoblin is designed to operate directly from a [Raspberry Pi Pico](ht
     - [Gravity: 9 PCS Sensor Set for Arduino](https://www.dfrobot.com/product-110.html)
     - [Gravity: 27 PCS Sensor Set for Arduino](https://www.dfrobot.com/product-725.html)
 
+## Flashing the firmware
+
+1. Press-and-hold the Pico BOOTSEL button while you connect the device to the computer USB port.
+2. Drag-and-drop the `.uf2` file matching your Pico board into the new storage device that appears on your PC.
+
 ## Building the firmware
 
 ### Prerequisites
