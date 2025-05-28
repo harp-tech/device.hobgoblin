@@ -22,6 +22,14 @@ The Harp Hobgoblin is designed to operate directly from a [Raspberry Pi Pico](ht
 1. Press-and-hold the Pico BOOTSEL button while you connect the device to the computer USB port.
 2. Drag-and-drop the `.uf2` file matching your Pico board into the new storage device that appears on your PC.
 
+## Using the device
+
+Harp Hobgoblin is designed for use with the [Bonsai](https://bonsai-rx.org/) visual reactive programming language.
+
+1. Install the `Harp.Hobgoblin` package using the [Bonsai package manager](https://bonsai-rx.org/docs/articles/packages.html).
+2. Insert the `Device` source from the editor toolbox.
+3. For additional documentation and examples, refer to the [official Harp documentation](https://harp-tech.org/articles/operators.html).
+
 ## Building the firmware
 
 ### Prerequisites

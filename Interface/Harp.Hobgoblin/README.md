@@ -19,7 +19,7 @@ Console.WriteLine($"{deviceName} WhoAmI: {whoAmI} Timestamp (s): {timestamp}");
 
 ## Additional Documentation
 
-For additional documentation and examples, refer to the [official Harp documentation](https://harp-tech.org).
+For additional documentation and examples, refer to the [official Harp documentation](https://harp-tech.org/articles/operators.html).
 
 ## Feedback & Contributing
 
