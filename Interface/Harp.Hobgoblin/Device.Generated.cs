@@ -1068,9 +1068,9 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents a register that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+    /// Represents a register that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
     /// </summary>
-    [Description("Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
+    [Description("Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.")]
     public partial class AnalogData
     {
         /// <summary>
@@ -1628,10 +1628,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
     /// </summary>
     [DisplayName("AnalogDataPayload")]
-    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
+    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.")]
     public partial class CreateAnalogDataPayload
     {
         /// <summary>
@@ -1666,7 +1666,7 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Creates a message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+        /// Creates a message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the AnalogData register.</returns>
@@ -1678,14 +1678,14 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
     /// </summary>
     [DisplayName("TimestampedAnalogDataPayload")]
-    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
+    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.")]
     public partial class CreateTimestampedAnalogDataPayload : CreateAnalogDataPayload
     {
         /// <summary>
-        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
