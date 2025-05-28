@@ -48,6 +48,8 @@ uint8_t adc_vals[3] = {0, 0, 0};
 uint8_t* data_ptr[1] = {adc_vals};
 struct repeating_timer adc_timer;
 const int32_t adc_period_ms = 4;
+int adc_sample_channel;
+int adc_ctrl_channel;
 
 // Harp App Register Setup.
 const size_t reg_count = 8;
@@ -260,7 +262,6 @@ void configure_adc(void)
     adc_init();
     adc_set_clkdiv(0); // Run conversion back-to-back at full speed.
     adc_set_round_robin(AI_MASK); // Enable round-robin sampling of all 3 inputs.
-    adc_select_input(0); // Set starting ADC channel for round-robin mode.
     adc_fifo_setup(
         true,    // Write each completed conversion to the sample FIFO
         true,    // Enable DMA data request (DREQ)
@@ -270,12 +271,12 @@ void configure_adc(void)
     );
 
     // Get two open DMA channels.
-    // sample_channel will sample the adc, paced by DREQ_ADC and chain to ctrl_channel.
-    // ctrl_channel will reconfigure & retrigger sample_channel when it finishes.
-    int sample_channel = dma_claim_unused_channel(true);
-    int ctrl_channel = dma_claim_unused_channel(true);
-    dma_channel_config sample_config = dma_channel_get_default_config(sample_channel);
-    dma_channel_config ctrl_config = dma_channel_get_default_config(ctrl_channel);
+    // adc_sample_channel will sample the adc, paced by DREQ_ADC and chain to adc_ctrl_channel.
+    // adc_ctrl_channel will reconfigure & retrigger adc_sample_channel when it finishes.
+    adc_sample_channel = dma_claim_unused_channel(true);
+    adc_ctrl_channel = dma_claim_unused_channel(true);
+    dma_channel_config sample_config = dma_channel_get_default_config(adc_sample_channel);
+    dma_channel_config ctrl_config = dma_channel_get_default_config(adc_ctrl_channel);
 
     // Setup Sample Channel.
     channel_config_set_transfer_data_size(&sample_config, DMA_SIZE_8);
@@ -283,14 +284,14 @@ void configure_adc(void)
     channel_config_set_write_increment(&sample_config, true);
     channel_config_set_irq_quiet(&sample_config, true);
     channel_config_set_dreq(&sample_config, DREQ_ADC); // pace data according to ADC
-    channel_config_set_chain_to(&sample_config, ctrl_channel);
+    channel_config_set_chain_to(&sample_config, adc_ctrl_channel);
     channel_config_set_enable(&sample_config, true);
 
-    // Apply sample_channel configuration.
+    // Apply adc_sample_channel configuration.
     dma_channel_configure(
-        sample_channel,     // Channel to be configured
+        adc_sample_channel, // Channel to be configured
         &sample_config,
-        nullptr,            // write (dst) address will be loaded by ctrl_chan.
+        nullptr,            // write (dst) address will be loaded by adc_ctrl_channel.
         &adc_hw->fifo,      // read (source) address. Does not change.
         count_of(adc_vals), // Number of word transfers.
         false               // Don't Start immediately.
@@ -308,32 +309,44 @@ void configure_adc(void)
 
     // Apply reconfig channel configuration.
     dma_channel_configure(
-        ctrl_channel,  // Channel to be configured
+        adc_ctrl_channel,  // Channel to be configured
         &ctrl_config,
-        &dma_hw->ch[sample_channel].al2_write_addr_trig, // dst address. Writing here retriggers samp_chan.
+        &dma_hw->ch[adc_sample_channel].al2_write_addr_trig, // dst address. Retrigger on write.
         data_ptr,      // Read (src) address is a single array with the starting address.
         1,             // Number of word transfers.
         false          // Don't Start immediately.
     );
-    dma_channel_start(ctrl_channel);
 }
 
 void enable_adc_events()
 {
-    // Start the ADC in free-running mode and setup repeating timer for
-    // reporting values back to the host.
+    // Set starting ADC channel for round-robin mode.
+    adc_select_input(0);
+
+    // Start free-running ADC and DMA transfer
+    dma_channel_start(adc_ctrl_channel);
     adc_run(true);
+
+    // Setup repeating timer for reporting values back to the host.
     add_repeating_timer_ms(adc_period_ms, adc_callback, NULL, &adc_timer);
 }
 
 void disable_adc_events()
 {
-    // Cancel repeating timer, stop the ADC, clean up the FIFO
-    // and reset starting ADC channel for round-robin mode.
+    // Cancel repeating timer.
     cancel_repeating_timer(&adc_timer);
+
+    // Ensure both DMA channels are fully stopped
+    // Note: loop is needed since dma_channel_abort does not wait for CHAN_ABORT
+    // https://github.com/raspberrypi/pico-sdk/issues/923
+    while (dma_channel_is_busy(adc_ctrl_channel) || dma_channel_is_busy(adc_sample_channel)) {
+        dma_channel_abort(adc_ctrl_channel);
+        dma_channel_abort(adc_sample_channel);
+    }
+
+    // Stop the ADC and drain the FIFO.
     adc_run(false);
     adc_fifo_drain();
-    adc_select_input(0);
 }
 
 void cancel_pulse_timers()
