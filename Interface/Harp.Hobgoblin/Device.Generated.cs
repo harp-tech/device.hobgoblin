@@ -43,7 +43,8 @@ namespace Harp.Hobgoblin
             { 35, typeof(DigitalOutputToggle) },
             { 36, typeof(DigitalOutputState) },
             { 37, typeof(StartPulseTrain) },
-            { 38, typeof(StopPulseTrain) }
+            { 38, typeof(StopPulseTrain) },
+            { 39, typeof(AnalogData) }
         };
 
         /// <summary>
@@ -264,6 +265,7 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputState"/>
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
+    /// <seealso cref="AnalogData"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -271,6 +273,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(DigitalOutputState))]
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
+    [XmlInclude(typeof(AnalogData))]
     [Description("Filters register-specific messages reported by the Hobgoblin device.")]
     public class FilterRegister : FilterRegisterBuilder, INamedElement
     {
@@ -299,6 +302,7 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputState"/>
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
+    /// <seealso cref="AnalogData"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -306,6 +310,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(DigitalOutputState))]
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
+    [XmlInclude(typeof(AnalogData))]
     [XmlInclude(typeof(TimestampedDigitalInputState))]
     [XmlInclude(typeof(TimestampedDigitalOutputSet))]
     [XmlInclude(typeof(TimestampedDigitalOutputClear))]
@@ -313,6 +318,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(TimestampedDigitalOutputState))]
     [XmlInclude(typeof(TimestampedStartPulseTrain))]
     [XmlInclude(typeof(TimestampedStopPulseTrain))]
+    [XmlInclude(typeof(TimestampedAnalogData))]
     [Description("Filters and selects specific messages reported by the Hobgoblin device.")]
     public partial class Parse : ParseBuilder, INamedElement
     {
@@ -338,6 +344,7 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputState"/>
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
+    /// <seealso cref="AnalogData"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -345,6 +352,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(DigitalOutputState))]
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
+    [XmlInclude(typeof(AnalogData))]
     [Description("Formats a sequence of values as specific Hobgoblin register messages.")]
     public partial class Format : FormatBuilder, INamedElement
     {
@@ -845,9 +853,9 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents a register that starts a pulse train on the specified digital output line.
+    /// Represents a register that starts a pulse train driving the specified digital output lines.
     /// </summary>
-    [Description("Starts a pulse train on the specified digital output line.")]
+    [Description("Starts a pulse train driving the specified digital output lines.")]
     public partial class StartPulseTrain
     {
         /// <summary>
@@ -1060,6 +1068,122 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
+    /// Represents a register that reports the sampled analog signal on each of the ADC input channels.
+    /// </summary>
+    [Description("Reports the sampled analog signal on each of the ADC input channels.")]
+    public partial class AnalogData
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogData"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 39;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="AnalogData"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="AnalogData"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static AnalogDataPayload ParsePayload(byte[] payload)
+        {
+            AnalogDataPayload result;
+            result.AnalogInput0 = payload[0];
+            result.AnalogInput1 = payload[1];
+            result.AnalogInput2 = payload[2];
+            return result;
+        }
+
+        static byte[] FormatPayload(AnalogDataPayload value)
+        {
+            byte[] result;
+            result = new byte[3];
+            result[0] = value.AnalogInput0;
+            result[1] = value.AnalogInput1;
+            result[2] = value.AnalogInput2;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload data for <see cref="AnalogData"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static AnalogDataPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<byte>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload data for <see cref="AnalogData"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogDataPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var payload = message.GetTimestampedPayloadArray<byte>();
+            return Timestamped.Create(ParsePayload(payload.Value), payload.Seconds);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="AnalogData"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogData"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, AnalogDataPayload value)
+        {
+            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="AnalogData"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="AnalogData"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogDataPayload value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating timestamped messages from the
+    /// AnalogData register.
+    /// </summary>
+    /// <seealso cref="AnalogData"/>
+    [Description("Filters and selects timestamped messages from the AnalogData register.")]
+    public partial class TimestampedAnalogData
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="AnalogData"/> register. This field is constant.
+        /// </summary>
+        public const int Address = AnalogData.Address;
+
+        /// <summary>
+        /// Returns timestamped payload data for <see cref="AnalogData"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<AnalogDataPayload> GetPayload(HarpMessage message)
+        {
+            return AnalogData.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
     /// Represents an operator which creates standard message payloads for the
     /// Hobgoblin device.
     /// </summary>
@@ -1070,6 +1194,7 @@ namespace Harp.Hobgoblin
     /// <seealso cref="CreateDigitalOutputStatePayload"/>
     /// <seealso cref="CreateStartPulseTrainPayload"/>
     /// <seealso cref="CreateStopPulseTrainPayload"/>
+    /// <seealso cref="CreateAnalogDataPayload"/>
     [XmlInclude(typeof(CreateDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateDigitalOutputClearPayload))]
@@ -1077,6 +1202,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(CreateDigitalOutputStatePayload))]
     [XmlInclude(typeof(CreateStartPulseTrainPayload))]
     [XmlInclude(typeof(CreateStopPulseTrainPayload))]
+    [XmlInclude(typeof(CreateAnalogDataPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputClearPayload))]
@@ -1084,6 +1210,7 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(CreateTimestampedDigitalOutputStatePayload))]
     [XmlInclude(typeof(CreateTimestampedStartPulseTrainPayload))]
     [XmlInclude(typeof(CreateTimestampedStopPulseTrainPayload))]
+    [XmlInclude(typeof(CreateTimestampedAnalogDataPayload))]
     [Description("Creates standard message payloads for the Hobgoblin device.")]
     public partial class CreateMessage : CreateMessageBuilder, INamedElement
     {
@@ -1370,16 +1497,16 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that starts a pulse train on the specified digital output line.
+    /// that starts a pulse train driving the specified digital output lines.
     /// </summary>
     [DisplayName("StartPulseTrainPayload")]
-    [Description("Creates a message payload that starts a pulse train on the specified digital output line.")]
+    [Description("Creates a message payload that starts a pulse train driving the specified digital output lines.")]
     public partial class CreateStartPulseTrainPayload
     {
         /// <summary>
-        /// Gets or sets a value that specifies the digital output lines on which to run each pulse of the pulse train.
+        /// Gets or sets a value that specifies the digital output lines set by each pulse of the pulse train.
         /// </summary>
-        [Description("Specifies the digital output lines on which to run each pulse of the pulse train.")]
+        [Description("Specifies the digital output lines set by each pulse of the pulse train.")]
         public DigitalOutputs DigitalOutput { get; set; }
 
         /// <summary>
@@ -1415,7 +1542,7 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Creates a message that starts a pulse train on the specified digital output line.
+        /// Creates a message that starts a pulse train driving the specified digital output lines.
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the StartPulseTrain register.</returns>
@@ -1427,14 +1554,14 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that starts a pulse train on the specified digital output line.
+    /// that starts a pulse train driving the specified digital output lines.
     /// </summary>
     [DisplayName("TimestampedStartPulseTrainPayload")]
-    [Description("Creates a timestamped message payload that starts a pulse train on the specified digital output line.")]
+    [Description("Creates a timestamped message payload that starts a pulse train driving the specified digital output lines.")]
     public partial class CreateTimestampedStartPulseTrainPayload : CreateStartPulseTrainPayload
     {
         /// <summary>
-        /// Creates a timestamped message that starts a pulse train on the specified digital output line.
+        /// Creates a timestamped message that starts a pulse train driving the specified digital output lines.
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
@@ -1500,6 +1627,76 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
+    /// Represents an operator that creates a message payload
+    /// that reports the sampled analog signal on each of the ADC input channels.
+    /// </summary>
+    [DisplayName("AnalogDataPayload")]
+    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels.")]
+    public partial class CreateAnalogDataPayload
+    {
+        /// <summary>
+        /// Gets or sets a value that the analog value sampled from ADC channel 0.
+        /// </summary>
+        [Description("The analog value sampled from ADC channel 0.")]
+        public byte AnalogInput0 { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that the analog value sampled from ADC channel 1.
+        /// </summary>
+        [Description("The analog value sampled from ADC channel 1.")]
+        public byte AnalogInput1 { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that the analog value sampled from ADC channel 2.
+        /// </summary>
+        [Description("The analog value sampled from ADC channel 2.")]
+        public byte AnalogInput2 { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the AnalogData register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public AnalogDataPayload GetPayload()
+        {
+            AnalogDataPayload value;
+            value.AnalogInput0 = AnalogInput0;
+            value.AnalogInput1 = AnalogInput1;
+            value.AnalogInput2 = AnalogInput2;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message that reports the sampled analog signal on each of the ADC input channels.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the AnalogData register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.AnalogData.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a timestamped message payload
+    /// that reports the sampled analog signal on each of the ADC input channels.
+    /// </summary>
+    [DisplayName("TimestampedAnalogDataPayload")]
+    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels.")]
+    public partial class CreateTimestampedAnalogDataPayload : CreateAnalogDataPayload
+    {
+        /// <summary>
+        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the AnalogData register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.AnalogData.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
     /// Represents the payload of the StartPulseTrain register.
     /// </summary>
     public struct StartPulseTrainPayload
@@ -1507,7 +1704,7 @@ namespace Harp.Hobgoblin
         /// <summary>
         /// Initializes a new instance of the <see cref="StartPulseTrainPayload"/> structure.
         /// </summary>
-        /// <param name="digitalOutput">Specifies the digital output lines on which to run each pulse of the pulse train.</param>
+        /// <param name="digitalOutput">Specifies the digital output lines set by each pulse of the pulse train.</param>
         /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is HIGH.</param>
         /// <param name="pulsePeriod">Specifies the interval in microseconds between each pulse in the pulse train.</param>
         /// <param name="pulseCount">Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.</param>
@@ -1524,7 +1721,7 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Specifies the digital output lines on which to run each pulse of the pulse train.
+        /// Specifies the digital output lines set by each pulse of the pulse train.
         /// </summary>
         public DigitalOutputs DigitalOutput;
 
@@ -1558,6 +1755,60 @@ namespace Harp.Hobgoblin
                 "PulseWidth = " + PulseWidth + ", " +
                 "PulsePeriod = " + PulsePeriod + ", " +
                 "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the payload of the AnalogData register.
+    /// </summary>
+    public struct AnalogDataPayload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnalogDataPayload"/> structure.
+        /// </summary>
+        /// <param name="analogInput0">The analog value sampled from ADC channel 0.</param>
+        /// <param name="analogInput1">The analog value sampled from ADC channel 1.</param>
+        /// <param name="analogInput2">The analog value sampled from ADC channel 2.</param>
+        public AnalogDataPayload(
+            byte analogInput0,
+            byte analogInput1,
+            byte analogInput2)
+        {
+            AnalogInput0 = analogInput0;
+            AnalogInput1 = analogInput1;
+            AnalogInput2 = analogInput2;
+        }
+
+        /// <summary>
+        /// The analog value sampled from ADC channel 0.
+        /// </summary>
+        public byte AnalogInput0;
+
+        /// <summary>
+        /// The analog value sampled from ADC channel 1.
+        /// </summary>
+        public byte AnalogInput1;
+
+        /// <summary>
+        /// The analog value sampled from ADC channel 2.
+        /// </summary>
+        public byte AnalogInput2;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the payload of
+        /// the AnalogData register.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the payload of the
+        /// AnalogData register.
+        /// </returns>
+        public override string ToString()
+        {
+            return "AnalogDataPayload { " +
+                "AnalogInput0 = " + AnalogInput0 + ", " +
+                "AnalogInput1 = " + AnalogInput1 + ", " +
+                "AnalogInput2 = " + AnalogInput2 + " " +
             "}";
         }
     }

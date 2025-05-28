@@ -355,5 +355,37 @@ namespace Harp.Hobgoblin
             var request = StopPulseTrain.FromPayload(MessageType.Write, value);
             await CommandAsync(request, cancellationToken);
         }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the AnalogData register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the register payload.
+        /// </returns>
+        public async Task<AnalogDataPayload> ReadAnalogDataAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogData.Address), cancellationToken);
+            return AnalogData.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the AnalogData register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<AnalogDataPayload>> ReadTimestampedAnalogDataAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogData.Address), cancellationToken);
+            return AnalogData.GetTimestampedPayload(reply);
+        }
     }
 }
