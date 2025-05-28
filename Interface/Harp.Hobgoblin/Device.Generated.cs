@@ -1068,9 +1068,9 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents a register that reports the sampled analog signal on each of the ADC input channels.
+    /// Represents a register that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
     /// </summary>
-    [Description("Reports the sampled analog signal on each of the ADC input channels.")]
+    [Description("Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
     public partial class AnalogData
     {
         /// <summary>
@@ -1081,14 +1081,14 @@ namespace Harp.Hobgoblin
         /// <summary>
         /// Represents the payload type of the <see cref="AnalogData"/> register. This field is constant.
         /// </summary>
-        public const PayloadType RegisterType = PayloadType.U8;
+        public const PayloadType RegisterType = PayloadType.U16;
 
         /// <summary>
         /// Represents the length of the <see cref="AnalogData"/> register. This field is constant.
         /// </summary>
         public const int RegisterLength = 3;
 
-        static AnalogDataPayload ParsePayload(byte[] payload)
+        static AnalogDataPayload ParsePayload(ushort[] payload)
         {
             AnalogDataPayload result;
             result.AnalogInput0 = payload[0];
@@ -1097,10 +1097,10 @@ namespace Harp.Hobgoblin
             return result;
         }
 
-        static byte[] FormatPayload(AnalogDataPayload value)
+        static ushort[] FormatPayload(AnalogDataPayload value)
         {
-            byte[] result;
-            result = new byte[3];
+            ushort[] result;
+            result = new ushort[3];
             result[0] = value.AnalogInput0;
             result[1] = value.AnalogInput1;
             result[2] = value.AnalogInput2;
@@ -1114,7 +1114,7 @@ namespace Harp.Hobgoblin
         /// <returns>A value representing the message payload.</returns>
         public static AnalogDataPayload GetPayload(HarpMessage message)
         {
-            return ParsePayload(message.GetPayloadArray<byte>());
+            return ParsePayload(message.GetPayloadArray<ushort>());
         }
 
         /// <summary>
@@ -1124,7 +1124,7 @@ namespace Harp.Hobgoblin
         /// <returns>A value representing the timestamped message payload.</returns>
         public static Timestamped<AnalogDataPayload> GetTimestampedPayload(HarpMessage message)
         {
-            var payload = message.GetTimestampedPayloadArray<byte>();
+            var payload = message.GetTimestampedPayloadArray<ushort>();
             return Timestamped.Create(ParsePayload(payload.Value), payload.Seconds);
         }
 
@@ -1139,7 +1139,7 @@ namespace Harp.Hobgoblin
         /// </returns>
         public static HarpMessage FromPayload(MessageType messageType, AnalogDataPayload value)
         {
-            return HarpMessage.FromByte(Address, messageType, FormatPayload(value));
+            return HarpMessage.FromUInt16(Address, messageType, FormatPayload(value));
         }
 
         /// <summary>
@@ -1155,7 +1155,7 @@ namespace Harp.Hobgoblin
         /// </returns>
         public static HarpMessage FromPayload(double timestamp, MessageType messageType, AnalogDataPayload value)
         {
-            return HarpMessage.FromByte(Address, timestamp, messageType, FormatPayload(value));
+            return HarpMessage.FromUInt16(Address, timestamp, messageType, FormatPayload(value));
         }
     }
 
@@ -1628,29 +1628,29 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a message payload
-    /// that reports the sampled analog signal on each of the ADC input channels.
+    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
     /// </summary>
     [DisplayName("AnalogDataPayload")]
-    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels.")]
+    [Description("Creates a message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
     public partial class CreateAnalogDataPayload
     {
         /// <summary>
         /// Gets or sets a value that the analog value sampled from ADC channel 0.
         /// </summary>
         [Description("The analog value sampled from ADC channel 0.")]
-        public byte AnalogInput0 { get; set; }
+        public ushort AnalogInput0 { get; set; }
 
         /// <summary>
         /// Gets or sets a value that the analog value sampled from ADC channel 1.
         /// </summary>
         [Description("The analog value sampled from ADC channel 1.")]
-        public byte AnalogInput1 { get; set; }
+        public ushort AnalogInput1 { get; set; }
 
         /// <summary>
         /// Gets or sets a value that the analog value sampled from ADC channel 2.
         /// </summary>
         [Description("The analog value sampled from ADC channel 2.")]
-        public byte AnalogInput2 { get; set; }
+        public ushort AnalogInput2 { get; set; }
 
         /// <summary>
         /// Creates a message payload for the AnalogData register.
@@ -1666,7 +1666,7 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Creates a message that reports the sampled analog signal on each of the ADC input channels.
+        /// Creates a message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
         /// </summary>
         /// <param name="messageType">Specifies the type of the created message.</param>
         /// <returns>A new message for the AnalogData register.</returns>
@@ -1678,14 +1678,14 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates a timestamped message payload
-    /// that reports the sampled analog signal on each of the ADC input channels.
+    /// that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
     /// </summary>
     [DisplayName("TimestampedAnalogDataPayload")]
-    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels.")]
+    [Description("Creates a timestamped message payload that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).")]
     public partial class CreateTimestampedAnalogDataPayload : CreateAnalogDataPayload
     {
         /// <summary>
-        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels.
+        /// Creates a timestamped message that reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
         /// </summary>
         /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
         /// <param name="messageType">Specifies the type of the created message.</param>
@@ -1771,9 +1771,9 @@ namespace Harp.Hobgoblin
         /// <param name="analogInput1">The analog value sampled from ADC channel 1.</param>
         /// <param name="analogInput2">The analog value sampled from ADC channel 2.</param>
         public AnalogDataPayload(
-            byte analogInput0,
-            byte analogInput1,
-            byte analogInput2)
+            ushort analogInput0,
+            ushort analogInput1,
+            ushort analogInput2)
         {
             AnalogInput0 = analogInput0;
             AnalogInput1 = analogInput1;
@@ -1783,17 +1783,17 @@ namespace Harp.Hobgoblin
         /// <summary>
         /// The analog value sampled from ADC channel 0.
         /// </summary>
-        public byte AnalogInput0;
+        public ushort AnalogInput0;
 
         /// <summary>
         /// The analog value sampled from ADC channel 1.
         /// </summary>
-        public byte AnalogInput1;
+        public ushort AnalogInput1;
 
         /// <summary>
         /// The analog value sampled from ADC channel 2.
         /// </summary>
-        public byte AnalogInput2;
+        public ushort AnalogInput2;
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents the payload of

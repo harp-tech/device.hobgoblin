@@ -63,10 +63,10 @@ registers:
     description: Stops the pulse train running on the specified digital output lines.
   AnalogData:
     address: 39
-    type: U8
+    type: U16
     length: 3
     access: Event
-    description: Reports the sampled analog signal on each of the ADC input channels.
+    description: Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
     payloadSpec:
       AnalogInput0:
         offset: 0
