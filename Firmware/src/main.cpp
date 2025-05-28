@@ -278,7 +278,7 @@ void configure_adc(void)
         false    // We won't byte-shift since we will be using the full ADC bit-depth.
     );
 
-// Get two open DMA channels.
+    // Get two open DMA channels.
     // adc_sample_channel will sample the adc, paced by DREQ_ADC and chain to adc_ctrl_channel.
     // adc_ctrl_channel will reconfigure & retrigger adc_sample_channel when it finishes.
     adc_sample_channel = dma_claim_unused_channel(true);

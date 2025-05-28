@@ -66,7 +66,7 @@ registers:
     type: U16
     length: 3
     access: Event
-    description: Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution (4096).
+    description: Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
     payloadSpec:
       AnalogInput0:
         offset: 0
