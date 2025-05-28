@@ -1,4 +1,4 @@
-# Compiling and Flashing this Example
+# Compiling and Flashing this Firmware
 
 ## Setting up the Build Environment
 
@@ -19,6 +19,16 @@ PICO_SDK_PATH=/home/username/projects/pico-sdk
 On Linux, it may be preferrable to put this in your `.bashrc` file.
 
 ## Compiling the Firmware
+
+### Using Visual Studio Code
+
+> [!TIP]
+> All commands below can be typed directly into the **Command Palette** (`Ctrl+Shift+P`).
+
+1. **Raspberry Pi Pico: Import Pico Project**
+   - Click the `Change` button and select the `Firmware` folder.
+   - Click the `Import` button.
+2. **Raspberry Pi Pico: Compile Pico Project**
 
 ### Without an IDE
 From this directory, create a directory called build, enter it, and invoke cmake with:

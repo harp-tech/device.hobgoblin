@@ -5,15 +5,16 @@
     <Copyright>Copyright © harp-tech and Contributors</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
     <Description>Bonsai Library containing interfaces for data acquisition and control of Harp Hobgoblin devices.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageType>Dependency;BonsaiLibrary</PackageType>
     <PackageTags>Harp Hobgoblin Bonsai Rx</PackageTags>
-    <PackageProjectUrl></PackageProjectUrl>
-    <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageIcon></PackageIcon>
-    <PackageOutputPath></PackageOutputPath>
+    <PackageProjectUrl>https://harp-tech.org</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>..\bin\$(Configuration)</PackageOutputPath>
     <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
     <LangVersion>9.0</LangVersion>
@@ -24,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="$(ProjectDir)$(PackageReadmeFile)" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\$(PackageLicenseFile)" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)..\$(PackageIcon)" Pack="true" PackagePath="/" Visible="false" />
     <EmbeddedResource Include="..\..\device.yml" />
   </ItemGroup>
 
