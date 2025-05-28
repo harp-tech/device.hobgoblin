@@ -47,7 +47,8 @@ pulse_train_t pulse_train_timers[pulse_train_count];
 uint8_t adc_vals[3] = {0, 0, 0};
 uint8_t* data_ptr[1] = {adc_vals};
 struct repeating_timer adc_timer;
-const int32_t adc_period_ms = 4;
+const int32_t adc_period_us = 4000;
+const int32_t adc_callback_delay_us = 80000;
 int adc_sample_channel;
 int adc_ctrl_channel;
 
@@ -196,6 +197,10 @@ void write_stop_pulse_train(msg_t& msg)
 
 bool adc_callback(repeating_timer_t *rt)
 {
+    if (!HarpCore::events_enabled())
+        return false;
+
+    rt->delay_us = -adc_period_us;
     app_regs.analog_data[0] = adc_vals[0];
     app_regs.analog_data[1] = adc_vals[1];
     app_regs.analog_data[2] = adc_vals[2];
@@ -328,14 +333,11 @@ void enable_adc_events()
     adc_run(true);
 
     // Setup repeating timer for reporting values back to the host.
-    add_repeating_timer_ms(adc_period_ms, adc_callback, NULL, &adc_timer);
+    add_repeating_timer_us(-adc_callback_delay_us, adc_callback, NULL, &adc_timer);
 }
 
 void disable_adc_events()
 {
-    // Cancel repeating timer.
-    cancel_repeating_timer(&adc_timer);
-
     // Ensure both DMA channels are fully stopped
     // Note: loop is needed since dma_channel_abort does not wait for CHAN_ABORT
     // https://github.com/raspberrypi/pico-sdk/issues/923
