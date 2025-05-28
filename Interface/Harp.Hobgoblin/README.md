@@ -23,4 +23,4 @@ For additional documentation and examples, refer to the [official Harp documenta
 
 ## Feedback & Contributing
 
-`Harp.Hobgoblin` is released as open-source under the [MIT license](https://licenses.nuget.org/MIT). Bug reports and contributions are welcome at [the GitHub repository](https://github.com/harp-tech/device.behavior).
+`Harp.Hobgoblin` is released as open-source under the [MIT license](https://licenses.nuget.org/MIT). Bug reports and contributions are welcome at [the GitHub repository](https://github.com/harp-tech/device.hobgoblin).
