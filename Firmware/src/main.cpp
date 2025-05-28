@@ -44,8 +44,8 @@ pulse_train_t pulse_train_timers[pulse_train_count];
 
 // Repeating timer and buffers for ADC sampling using 
 // Pointer to an address is required for the reinitialization DMA channel.
-uint8_t adc_vals[3] = {0, 0, 0};
-uint8_t* data_ptr[1] = {adc_vals};
+uint16_t adc_vals[3] = {0, 0, 0};
+uint16_t* data_ptr[1] = {adc_vals};
 struct repeating_timer adc_timer;
 const int32_t adc_period_us = 4000;
 const int32_t adc_callback_delay_us = 80000;
@@ -66,7 +66,7 @@ struct app_regs_t
     volatile uint8_t do_state;
     volatile uint32_t start_pulse_train[4];
     volatile uint8_t stop_pulse_train;
-    volatile uint8_t analog_data[3];
+    volatile uint16_t analog_data[3];
 } app_regs;
 #pragma pack(pop)
 
@@ -80,7 +80,7 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8},
     {(uint8_t*)&app_regs.start_pulse_train, sizeof(app_regs.start_pulse_train), U32},
     {(uint8_t*)&app_regs.stop_pulse_train, sizeof(app_regs.stop_pulse_train), U8},
-    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U8}
+    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16}
 };
 
 void gpio_callback(uint gpio, uint32_t events)
@@ -201,9 +201,12 @@ bool adc_callback(repeating_timer_t *rt)
         return false;
 
     rt->delay_us = -adc_period_us;
-    app_regs.analog_data[0] = adc_vals[0];
-    app_regs.analog_data[1] = adc_vals[1];
-    app_regs.analog_data[2] = adc_vals[2];
+    
+    // Mask the values to 12 bits (0xFFF) to ensure only valid ADC bits are used
+    app_regs.analog_data[0] = adc_vals[0] & 0xFFF;
+    app_regs.analog_data[1] = adc_vals[1] & 0xFFF;
+    app_regs.analog_data[2] = adc_vals[2] & 0xFFF;
+    
     HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7);
     return true;
 }
@@ -272,10 +275,10 @@ void configure_adc(void)
         true,    // Enable DMA data request (DREQ)
         1,       // DREQ (and IRQ) asserted when at least 1 sample present
         false,   // We won't see the ERR bit because of 8 bit reads; disable.
-        true     // Shift each sample to 8 bits when pushing to FIFO
+        false    // We won't byte-shift since we will be using the full ADC bit-depth.
     );
 
-    // Get two open DMA channels.
+// Get two open DMA channels.
     // adc_sample_channel will sample the adc, paced by DREQ_ADC and chain to adc_ctrl_channel.
     // adc_ctrl_channel will reconfigure & retrigger adc_sample_channel when it finishes.
     adc_sample_channel = dma_claim_unused_channel(true);
@@ -284,7 +287,7 @@ void configure_adc(void)
     dma_channel_config ctrl_config = dma_channel_get_default_config(adc_ctrl_channel);
 
     // Setup Sample Channel.
-    channel_config_set_transfer_data_size(&sample_config, DMA_SIZE_8);
+    channel_config_set_transfer_data_size(&sample_config, DMA_SIZE_16);
     channel_config_set_read_increment(&sample_config, false); // read from adc FIFO reg.
     channel_config_set_write_increment(&sample_config, true);
     channel_config_set_irq_quiet(&sample_config, true);
