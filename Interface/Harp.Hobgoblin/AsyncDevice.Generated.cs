@@ -368,7 +368,7 @@ namespace Harp.Hobgoblin
         /// </returns>
         public async Task<AnalogDataPayload> ReadAnalogDataAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogData.Address), cancellationToken);
+            var reply = await CommandAsync(HarpCommand.ReadUInt16(AnalogData.Address), cancellationToken);
             return AnalogData.GetPayload(reply);
         }
 
@@ -384,7 +384,7 @@ namespace Harp.Hobgoblin
         /// </returns>
         public async Task<Timestamped<AnalogDataPayload>> ReadTimestampedAnalogDataAsync(CancellationToken cancellationToken = default)
         {
-            var reply = await CommandAsync(HarpCommand.ReadByte(AnalogData.Address), cancellationToken);
+            var reply = await CommandAsync(HarpCommand.ReadUInt16(AnalogData.Address), cancellationToken);
             return AnalogData.GetTimestampedPayload(reply);
         }
     }
