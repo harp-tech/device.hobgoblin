@@ -35,7 +35,7 @@ const size_t pulse_train_count = 256;
 struct pulse_train_t
 {
     struct repeating_timer timer;
-    uint8_t pwm_output;
+    uint8_t output_mask;
     uint32_t pulse_width_us;
     uint32_t pulse_period_us;
     uint32_t pulse_count;
@@ -120,8 +120,8 @@ void write_do_state(msg_t &msg)
 int64_t pulse_callback(alarm_id_t id, void *user_data)
 {
     pulse_train_t *pulse_train = (pulse_train_t *)user_data;
-    app_regs.do_clear = pulse_train->pwm_output;
-    gpio_clr_mask(pulse_train->pwm_output << DO0_PIN);
+    app_regs.do_clear = pulse_train->output_mask;
+    gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
 
     // Emit stop notifications for pulse and pulse train
     uint64_t harp_time_us = HarpCore::harp_time_us_64();
@@ -130,7 +130,7 @@ int64_t pulse_callback(alarm_id_t id, void *user_data)
     {
         // Mark timer as cancelled if pulse train stops
         pulse_train->timer.alarm_id = 0;
-        app_regs.stop_pulse_train = pulse_train->pwm_output;
+        app_regs.stop_pulse_train = pulse_train->output_mask;
         HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 6, harp_time_us);
     }
     return 0;
@@ -153,7 +153,7 @@ bool pulse_train_callback(repeating_timer_t *rt)
     // For every pulse in the pulse train, arm an alarm matching the pulse width
     add_alarm_in_us(pulse_train->pulse_width_us, pulse_callback, pulse_train, true);
 
-    gpio_set_mask(pulse_train->pwm_output << DO0_PIN);
+    gpio_set_mask(pulse_train->output_mask << DO0_PIN);
     HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 1);
     return pulse_train->timer.delay_us != 0;
 }
@@ -163,9 +163,9 @@ void write_start_pulse_train(msg_t& msg)
     HarpCore::copy_msg_payload_to_register(msg);
 
     // Configure pulse train parameters
-    uint8_t pwm_output = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
-    pulse_train_t *pulse_train = &pulse_train_timers[pwm_output];
-    pulse_train->pwm_output = pwm_output;
+    uint8_t output_mask = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
+    pulse_train_t *pulse_train = &pulse_train_timers[output_mask];
+    pulse_train->output_mask = output_mask;
     pulse_train->pulse_width_us = app_regs.start_pulse_train[1];
     pulse_train->pulse_period_us = app_regs.start_pulse_train[2];
     pulse_train->pulse_count = app_regs.start_pulse_train[3];
@@ -173,7 +173,7 @@ void write_start_pulse_train(msg_t& msg)
     // Cancel any existing timer
     if (cancel_repeating_timer(&pulse_train->timer))
     {
-        app_regs.stop_pulse_train = pwm_output;
+        app_regs.stop_pulse_train = output_mask;
         HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 6);
     }
 
@@ -186,8 +186,8 @@ void write_stop_pulse_train(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
 
-    uint8_t pwm_output = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
-    cancel_repeating_timer(&pulse_train_timers[pwm_output].timer);
+    uint8_t output_mask = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
+    cancel_repeating_timer(&pulse_train_timers[output_mask].timer);
 
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
