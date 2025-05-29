@@ -261,6 +261,7 @@ void write_pwm_stop(msg_t &msg)
     HarpCore::copy_msg_payload_to_register(msg);
     
     pwm_set_enabled(PWM_SLICE, false);
+    gpio_put(PWM_PIN, false);
     
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -301,6 +302,8 @@ void app_reset()
     app_regs.pwm_stop = 0;
 
     pwm_set_enabled(PWM_SLICE, false);
+    gpio_put(PWM_PIN, false);
+
 }
 
 void configure_gpio(void)
