@@ -429,6 +429,9 @@ void update_app_state()
     }
     else if (events_active && !HarpCore::events_enabled())
     {
+        // disable PWM
+        pwm_set_enabled(PWM_SLICE, false);
+        gpio_put(PWM_PIN, false);
         // disable events
         enable_gpio(false);
         disable_adc_events();
