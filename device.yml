@@ -77,6 +77,26 @@ registers:
       AnalogInput2:
         offset: 2
         description: The analog value sampled from ADC channel 2.
+  StartPwm:
+    address: 40
+    type: U32
+    length: 2
+    access: Write
+    description: Starts the PWM feature on GPIO0.
+    payloadSpec:
+      Frequency:
+        offset: 0
+        defaultValue: 10000
+        description: Specifies the frequency in Hz of the PWM signal.
+      DutyCycle:
+        offset: 1
+        defaultValue: 50
+        description: Specifies the duty cycle of the PWM signal as a percentage (0-100).
+  StopPwm:
+    address: 41
+    type: U8
+    access: Write
+    description: Writing any value will stop the PWM generation on GPIO0.
 bitMasks:
   DigitalInputs:
     description: Specifies the state of port digital input lines.
