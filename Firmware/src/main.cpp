@@ -6,6 +6,7 @@
 #include <hardware/gpio.h>
 #include <hardware/adc.h>
 #include <hardware/dma.h>
+#include <pico/util/queue.h>
 
 // Create device name array.
 const uint16_t who_am_i = 123;
@@ -51,6 +52,17 @@ const int32_t adc_period_us = 4000;
 const int32_t adc_callback_delay_us = 80000;
 int adc_sample_channel;
 int adc_ctrl_channel;
+static queue_t adc_queue;
+
+// Define queue item contents
+#pragma pack(push, 1)
+struct adc_queue_item_t
+{
+    uint64_t timestamp;
+    uint16_t analog_data[3];
+};
+#pragma pack(pop)
+adc_queue_item_t adc_queue_current;
 
 // Harp App Register Setup.
 const size_t reg_count = 8;
@@ -203,11 +215,12 @@ bool adc_callback(repeating_timer_t *rt)
     rt->delay_us = -adc_period_us;
     
     // Mask the values to 12 bits (0xFFF) to ensure only valid ADC bits are used
-    app_regs.analog_data[0] = adc_vals[0] & 0xFFF;
-    app_regs.analog_data[1] = adc_vals[1] & 0xFFF;
-    app_regs.analog_data[2] = adc_vals[2] & 0xFFF;
-    
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7);
+    adc_queue_item_t item;
+    item.timestamp = HarpCore::harp_time_us_64();
+    item.analog_data[0] = adc_vals[0] & 0xFFF;
+    item.analog_data[1] = adc_vals[1] & 0xFFF;
+    item.analog_data[2] = adc_vals[2] & 0xFFF;
+    queue_add_blocking(&adc_queue, &item);
     return true;
 }
 
@@ -324,6 +337,10 @@ void configure_adc(void)
         1,             // Number of word transfers.
         false          // Don't Start immediately.
     );
+
+    // Configure queue for storing sample data and avoid concurrency in
+    // outbound message buffers, i.e. avoid sending reply in timer callback.
+    queue_init(&adc_queue, sizeof(adc_queue_item_t), 2);
 }
 
 void enable_adc_events()
@@ -380,6 +397,14 @@ void update_app_state()
         disable_adc_events();
         cancel_pulse_timers();
         events_active = false;
+    }
+
+    if (events_active && queue_try_remove(&adc_queue, &adc_queue_current))
+    {
+        app_regs.analog_data[0] = adc_queue_current.analog_data[0];
+        app_regs.analog_data[1] = adc_queue_current.analog_data[1];
+        app_regs.analog_data[2] = adc_queue_current.analog_data[2];
+        HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7, adc_queue_current.timestamp);
     }
 }
 
