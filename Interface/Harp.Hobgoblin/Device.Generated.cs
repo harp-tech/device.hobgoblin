@@ -44,7 +44,9 @@ namespace Harp.Hobgoblin
             { 36, typeof(DigitalOutputState) },
             { 37, typeof(StartPulseTrain) },
             { 38, typeof(StopPulseTrain) },
-            { 39, typeof(AnalogData) }
+            { 39, typeof(AnalogData) },
+            { 40, typeof(StartPwm) },
+            { 41, typeof(StopPwm) }
         };
 
         /// <summary>
@@ -266,6 +268,8 @@ namespace Harp.Hobgoblin
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="StartPwm"/>
+    /// <seealso cref="StopPwm"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -274,6 +278,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(StartPwm))]
+    [XmlInclude(typeof(StopPwm))]
     [Description("Filters register-specific messages reported by the Hobgoblin device.")]
     public class FilterRegister : FilterRegisterBuilder, INamedElement
     {
@@ -303,6 +309,8 @@ namespace Harp.Hobgoblin
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="StartPwm"/>
+    /// <seealso cref="StopPwm"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -311,6 +319,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(StartPwm))]
+    [XmlInclude(typeof(StopPwm))]
     [XmlInclude(typeof(TimestampedDigitalInputState))]
     [XmlInclude(typeof(TimestampedDigitalOutputSet))]
     [XmlInclude(typeof(TimestampedDigitalOutputClear))]
@@ -319,6 +329,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(TimestampedStartPulseTrain))]
     [XmlInclude(typeof(TimestampedStopPulseTrain))]
     [XmlInclude(typeof(TimestampedAnalogData))]
+    [XmlInclude(typeof(TimestampedStartPwm))]
+    [XmlInclude(typeof(TimestampedStopPwm))]
     [Description("Filters and selects specific messages reported by the Hobgoblin device.")]
     public partial class Parse : ParseBuilder, INamedElement
     {
@@ -345,6 +357,8 @@ namespace Harp.Hobgoblin
     /// <seealso cref="StartPulseTrain"/>
     /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="StartPwm"/>
+    /// <seealso cref="StopPwm"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
@@ -353,6 +367,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(StartPulseTrain))]
     [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(StartPwm))]
+    [XmlInclude(typeof(StopPwm))]
     [Description("Formats a sequence of values as specific Hobgoblin register messages.")]
     public partial class Format : FormatBuilder, INamedElement
     {
@@ -1184,6 +1200,216 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
+    /// Represents a register that starts the PWM feature on GPIO0.
+    /// </summary>
+    [Description("Starts the PWM feature on GPIO0.")]
+    public partial class StartPwm
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="StartPwm"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 40;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="StartPwm"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="StartPwm"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 2;
+
+        static StartPwmPayload ParsePayload(uint[] payload)
+        {
+            StartPwmPayload result;
+            result.Frequency = payload[0];
+            result.DutyCycle = payload[1];
+            return result;
+        }
+
+        static uint[] FormatPayload(StartPwmPayload value)
+        {
+            uint[] result;
+            result = new uint[2];
+            result[0] = value.Frequency;
+            result[1] = value.DutyCycle;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload data for <see cref="StartPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static StartPwmPayload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload data for <see cref="StartPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<StartPwmPayload> GetTimestampedPayload(HarpMessage message)
+        {
+            var payload = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload.Value), payload.Seconds);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="StartPwm"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="StartPwm"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, StartPwmPayload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="StartPwm"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="StartPwm"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, StartPwmPayload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating timestamped messages from the
+    /// StartPwm register.
+    /// </summary>
+    /// <seealso cref="StartPwm"/>
+    [Description("Filters and selects timestamped messages from the StartPwm register.")]
+    public partial class TimestampedStartPwm
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="StartPwm"/> register. This field is constant.
+        /// </summary>
+        public const int Address = StartPwm.Address;
+
+        /// <summary>
+        /// Returns timestamped payload data for <see cref="StartPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<StartPwmPayload> GetPayload(HarpMessage message)
+        {
+            return StartPwm.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Represents a register that writing any value will stop the PWM generation on GPIO0.
+    /// </summary>
+    [Description("Writing any value will stop the PWM generation on GPIO0.")]
+    public partial class StopPwm
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="StopPwm"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 41;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="StopPwm"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="StopPwm"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 1;
+
+        /// <summary>
+        /// Returns the payload data for <see cref="StopPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static byte GetPayload(HarpMessage message)
+        {
+            return message.GetPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload data for <see cref="StopPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetTimestampedPayload(HarpMessage message)
+        {
+            return message.GetTimestampedPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="StopPwm"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="StopPwm"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, messageType, value);
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="StopPwm"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The value to be stored in the message payload.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="StopPwm"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, byte value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, value);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating timestamped messages from the
+    /// StopPwm register.
+    /// </summary>
+    /// <seealso cref="StopPwm"/>
+    [Description("Filters and selects timestamped messages from the StopPwm register.")]
+    public partial class TimestampedStopPwm
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="StopPwm"/> register. This field is constant.
+        /// </summary>
+        public const int Address = StopPwm.Address;
+
+        /// <summary>
+        /// Returns timestamped payload data for <see cref="StopPwm"/> register messages.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<byte> GetPayload(HarpMessage message)
+        {
+            return StopPwm.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
     /// Represents an operator which creates standard message payloads for the
     /// Hobgoblin device.
     /// </summary>
@@ -1195,6 +1421,8 @@ namespace Harp.Hobgoblin
     /// <seealso cref="CreateStartPulseTrainPayload"/>
     /// <seealso cref="CreateStopPulseTrainPayload"/>
     /// <seealso cref="CreateAnalogDataPayload"/>
+    /// <seealso cref="CreateStartPwmPayload"/>
+    /// <seealso cref="CreateStopPwmPayload"/>
     [XmlInclude(typeof(CreateDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateDigitalOutputClearPayload))]
@@ -1203,6 +1431,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(CreateStartPulseTrainPayload))]
     [XmlInclude(typeof(CreateStopPulseTrainPayload))]
     [XmlInclude(typeof(CreateAnalogDataPayload))]
+    [XmlInclude(typeof(CreateStartPwmPayload))]
+    [XmlInclude(typeof(CreateStopPwmPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputClearPayload))]
@@ -1211,6 +1441,8 @@ namespace Harp.Hobgoblin
     [XmlInclude(typeof(CreateTimestampedStartPulseTrainPayload))]
     [XmlInclude(typeof(CreateTimestampedStopPulseTrainPayload))]
     [XmlInclude(typeof(CreateTimestampedAnalogDataPayload))]
+    [XmlInclude(typeof(CreateTimestampedStartPwmPayload))]
+    [XmlInclude(typeof(CreateTimestampedStopPwmPayload))]
     [Description("Creates standard message payloads for the Hobgoblin device.")]
     public partial class CreateMessage : CreateMessageBuilder, INamedElement
     {
@@ -1697,6 +1929,123 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
+    /// Represents an operator that creates a message payload
+    /// that starts the PWM feature on GPIO0.
+    /// </summary>
+    [DisplayName("StartPwmPayload")]
+    [Description("Creates a message payload that starts the PWM feature on GPIO0.")]
+    public partial class CreateStartPwmPayload
+    {
+        /// <summary>
+        /// Gets or sets a value that specifies the frequency in Hz of the PWM signal.
+        /// </summary>
+        [Description("Specifies the frequency in Hz of the PWM signal.")]
+        public uint Frequency { get; set; } = 10000;
+
+        /// <summary>
+        /// Gets or sets a value that specifies the duty cycle of the PWM signal as a percentage (0-100).
+        /// </summary>
+        [Description("Specifies the duty cycle of the PWM signal as a percentage (0-100).")]
+        public uint DutyCycle { get; set; } = 50;
+
+        /// <summary>
+        /// Creates a message payload for the StartPwm register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public StartPwmPayload GetPayload()
+        {
+            StartPwmPayload value;
+            value.Frequency = Frequency;
+            value.DutyCycle = DutyCycle;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message that starts the PWM feature on GPIO0.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the StartPwm register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.StartPwm.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a timestamped message payload
+    /// that starts the PWM feature on GPIO0.
+    /// </summary>
+    [DisplayName("TimestampedStartPwmPayload")]
+    [Description("Creates a timestamped message payload that starts the PWM feature on GPIO0.")]
+    public partial class CreateTimestampedStartPwmPayload : CreateStartPwmPayload
+    {
+        /// <summary>
+        /// Creates a timestamped message that starts the PWM feature on GPIO0.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the StartPwm register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.StartPwm.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a message payload
+    /// that writing any value will stop the PWM generation on GPIO0.
+    /// </summary>
+    [DisplayName("StopPwmPayload")]
+    [Description("Creates a message payload that writing any value will stop the PWM generation on GPIO0.")]
+    public partial class CreateStopPwmPayload
+    {
+        /// <summary>
+        /// Gets or sets the value that writing any value will stop the PWM generation on GPIO0.
+        /// </summary>
+        [Description("The value that writing any value will stop the PWM generation on GPIO0.")]
+        public byte StopPwm { get; set; }
+
+        /// <summary>
+        /// Creates a message payload for the StopPwm register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public byte GetPayload()
+        {
+            return StopPwm;
+        }
+
+        /// <summary>
+        /// Creates a message that writing any value will stop the PWM generation on GPIO0.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the StopPwm register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.StopPwm.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates a timestamped message payload
+    /// that writing any value will stop the PWM generation on GPIO0.
+    /// </summary>
+    [DisplayName("TimestampedStopPwmPayload")]
+    [Description("Creates a timestamped message payload that writing any value will stop the PWM generation on GPIO0.")]
+    public partial class CreateTimestampedStopPwmPayload : CreateStopPwmPayload
+    {
+        /// <summary>
+        /// Creates a timestamped message that writing any value will stop the PWM generation on GPIO0.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message payload, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the StopPwm register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.StopPwm.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
     /// Represents the payload of the StartPulseTrain register.
     /// </summary>
     public struct StartPulseTrainPayload
@@ -1809,6 +2158,51 @@ namespace Harp.Hobgoblin
                 "AnalogInput0 = " + AnalogInput0 + ", " +
                 "AnalogInput1 = " + AnalogInput1 + ", " +
                 "AnalogInput2 = " + AnalogInput2 + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the payload of the StartPwm register.
+    /// </summary>
+    public struct StartPwmPayload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartPwmPayload"/> structure.
+        /// </summary>
+        /// <param name="frequency">Specifies the frequency in Hz of the PWM signal.</param>
+        /// <param name="dutyCycle">Specifies the duty cycle of the PWM signal as a percentage (0-100).</param>
+        public StartPwmPayload(
+            uint frequency,
+            uint dutyCycle)
+        {
+            Frequency = frequency;
+            DutyCycle = dutyCycle;
+        }
+
+        /// <summary>
+        /// Specifies the frequency in Hz of the PWM signal.
+        /// </summary>
+        public uint Frequency;
+
+        /// <summary>
+        /// Specifies the duty cycle of the PWM signal as a percentage (0-100).
+        /// </summary>
+        public uint DutyCycle;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the payload of
+        /// the StartPwm register.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the payload of the
+        /// StartPwm register.
+        /// </returns>
+        public override string ToString()
+        {
+            return "StartPwmPayload { " +
+                "Frequency = " + Frequency + ", " +
+                "DutyCycle = " + DutyCycle + " " +
             "}";
         }
     }
