@@ -12,7 +12,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_GENERATE_ASPNET_CERTIFICATE: false
   ContinuousIntegrationBuild: true
-  CiBuildVersion: ${{github.event.release.tag_name || 'api0.0.0'}}
+  CiBuildVersion: ${{github.event.release.tag_name || 'v0.0.0'}}
 jobs:
   build:
     strategy:
@@ -24,7 +24,7 @@ jobs:
             collect-packages: true
     name: Build
     runs-on: windows-latest
-    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'api')
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'v')
     steps:
       # ----------------------------------------------------------------------- Checkout
       - name: Checkout
