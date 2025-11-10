@@ -387,5 +387,97 @@ namespace Harp.Hobgoblin
             var reply = await CommandAsync(HarpCommand.ReadUInt16(AnalogData.Address), cancellationToken);
             return AnalogData.GetTimestampedPayload(reply);
         }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the StartPwm register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the register payload.
+        /// </returns>
+        public async Task<StartPwmPayload> ReadStartPwmAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPwm.Address), cancellationToken);
+            return StartPwm.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the StartPwm register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<StartPwmPayload>> ReadTimestampedStartPwmAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPwm.Address), cancellationToken);
+            return StartPwm.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the StartPwm register.
+        /// </summary>
+        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WriteStartPwmAsync(StartPwmPayload value, CancellationToken cancellationToken = default)
+        {
+            var request = StartPwm.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the contents of the StopPwm register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the register payload.
+        /// </returns>
+        public async Task<byte> ReadStopPwmAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(StopPwm.Address), cancellationToken);
+            return StopPwm.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped contents of the StopPwm register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The <see cref="Task{TResult}.Result"/>
+        /// property contains the timestamped register payload.
+        /// </returns>
+        public async Task<Timestamped<byte>> ReadTimestampedStopPwmAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(StopPwm.Address), cancellationToken);
+            return StopPwm.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a value to the StopPwm register.
+        /// </summary>
+        /// <param name="value">The value to be stored in the register.</param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> which can be used to cancel the operation.
+        /// </param>
+        /// <returns>The task object representing the asynchronous write operation.</returns>
+        public async Task WriteStopPwmAsync(byte value, CancellationToken cancellationToken = default)
+        {
+            var request = StopPwm.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
     }
 }

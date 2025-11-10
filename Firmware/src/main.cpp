@@ -7,6 +7,7 @@
 #include <hardware/adc.h>
 #include <hardware/dma.h>
 #include <pico/util/queue.h>
+#include <hardware/pwm.h>
 
 // Create device name array.
 const uint16_t who_am_i = 123;
@@ -27,6 +28,9 @@ const uint32_t AI0_PIN = 26;
 const uint32_t AI1_PIN = 27;
 const uint32_t AI2_PIN = 28;
 const uint32_t AI_MASK = 0x7;
+const uint32_t PWM_PIN = 0;
+const uint32_t PWM_SLICE = pwm_gpio_to_slice_num(PWM_PIN);
+const uint32_t PWM_CHANNEL = pwm_gpio_to_channel(PWM_PIN);
 
 // Harp App state.
 bool events_active = false;
@@ -65,20 +69,22 @@ struct adc_queue_item_t
 adc_queue_item_t adc_queue_current;
 
 // Harp App Register Setup.
-const size_t reg_count = 8;
+const size_t reg_count = 10;
 
 // Define register contents.
 #pragma pack(push, 1)
 struct app_regs_t
 {
-    volatile uint8_t di_state;
-    volatile uint8_t do_set;
-    volatile uint8_t do_clear;
-    volatile uint8_t do_toggle;
-    volatile uint8_t do_state;
-    volatile uint32_t start_pulse_train[4];
-    volatile uint8_t stop_pulse_train;
-    volatile uint16_t analog_data[3];
+    volatile uint8_t di_state; // 32
+    volatile uint8_t do_set; // 33
+    volatile uint8_t do_clear; // 34
+    volatile uint8_t do_toggle; // 35
+    volatile uint8_t do_state; // 36
+    volatile uint32_t start_pulse_train[4]; // 37
+    volatile uint8_t stop_pulse_train; //38
+    volatile uint16_t analog_data[3]; // 39
+    volatile uint32_t pwm_config[2];  // 40 [0]=frequency in Hz, [1]=duty cycle (0-100)
+    volatile uint8_t pwm_stop; // 41
 } app_regs;
 #pragma pack(pop)
 
@@ -92,7 +98,9 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8},
     {(uint8_t*)&app_regs.start_pulse_train, sizeof(app_regs.start_pulse_train), U32},
     {(uint8_t*)&app_regs.stop_pulse_train, sizeof(app_regs.stop_pulse_train), U8},
-    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16}
+    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16},
+    {(uint8_t*)&app_regs.pwm_config, sizeof(app_regs.pwm_config), U32},
+    {(uint8_t*)&app_regs.pwm_stop, sizeof(app_regs.pwm_stop), U8}
 };
 
 void gpio_callback(uint gpio, uint32_t events)
@@ -224,6 +232,41 @@ bool adc_callback(repeating_timer_t *rt)
     return true;
 }
 
+void write_pwm_config(msg_t &msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    
+    uint32_t frequency = app_regs.pwm_config[0];
+    uint32_t duty_percent = app_regs.pwm_config[1];
+    
+    if (duty_percent > 100) duty_percent = 100;
+    
+    // Assume 125MHz for the 2040
+    float clock_div = 125.0f;
+    uint32_t wrap = 1000000 / frequency;  // At 1MHz, this gives us cycles per PWM period
+    uint32_t level = (wrap * duty_percent) / 100;
+    
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, clock_div);
+    pwm_config_set_wrap(&config, wrap - 1);  // Wrap is 0-based
+    
+    pwm_init(PWM_SLICE, &config, true);
+    pwm_set_chan_level(PWM_SLICE, PWM_CHANNEL, level);
+    
+    HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+void write_pwm_stop(msg_t &msg)
+{
+    HarpCore::copy_msg_payload_to_register(msg);
+    
+    pwm_set_enabled(PWM_SLICE, false);
+    gpio_put(PWM_PIN, false);
+    
+    HarpCore::send_harp_reply(WRITE, msg.header.address);
+}
+
+
 // Define register read-and-write handler functions.
 RegFnPair reg_handler_fns[reg_count]
 {
@@ -234,7 +277,9 @@ RegFnPair reg_handler_fns[reg_count]
     {&HarpCore::read_reg_generic, &write_do_state},
     {&HarpCore::read_reg_generic, &write_start_pulse_train},
     {&HarpCore::read_reg_generic, &write_stop_pulse_train},
-    {&HarpCore::read_reg_generic, &HarpCore::write_to_read_only_reg_error}
+    {&HarpCore::read_reg_generic, &HarpCore::write_to_read_only_reg_error},
+    {&HarpCore::read_reg_generic, &write_pwm_config},
+    {&HarpCore::read_reg_generic, &write_pwm_stop}
 };
 
 void app_reset()
@@ -252,6 +297,13 @@ void app_reset()
     app_regs.analog_data[0] = 0;
     app_regs.analog_data[1] = 0;
     app_regs.analog_data[2] = 0;
+    app_regs.pwm_config[0] = 1000;
+    app_regs.pwm_config[1] = 50;
+    app_regs.pwm_stop = 0;
+
+    pwm_set_enabled(PWM_SLICE, false);
+    gpio_put(PWM_PIN, false);
+
 }
 
 void configure_gpio(void)
@@ -261,6 +313,8 @@ void configure_gpio(void)
     gpio_set_dir_in_masked(DI_MASK);
     gpio_clr_mask(DO_MASK);
 
+    gpio_set_function(PWM_PIN, GPIO_FUNC_PWM);
+    
     gpio_set_irq_callback(gpio_callback);
     gpio_set_irq_enabled(2, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(3, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
@@ -392,6 +446,9 @@ void update_app_state()
     }
     else if (events_active && !HarpCore::events_enabled())
     {
+        // disable PWM
+        pwm_set_enabled(PWM_SLICE, false);
+        gpio_put(PWM_PIN, false);
         // disable events
         enable_gpio(false);
         disable_adc_events();
@@ -433,3 +490,4 @@ int main()
         app.run();
     }
 }
+
