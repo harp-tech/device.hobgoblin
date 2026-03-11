@@ -65,21 +65,14 @@ struct harp_event_t
 {
     uint64_t timestamp;
     uint8_t reg_address;
+    msg_type_t msg_type;
+    uint8_t num_bytes;
+    reg_type_t payload_type;
+    uint8_t payload[16]; // TODO... For now, the largest register is start_pulse_train, 4×uint32 = 16 bytes
 };
 #pragma pack(pop)
 adc_queue_item_t adc_queue_current;
 static queue_t harp_event_queue;
-
-inline void enqueue_harp_event(uint8_t reg_address, uint64_t timestamp)
-{
-    harp_event_t event = {timestamp, reg_address};
-    queue_try_add(&harp_event_queue, &event);
-}
-
-inline void enqueue_harp_event(uint8_t reg_address)
-{
-    enqueue_harp_event(reg_address, HarpCore::harp_time_us_64());
-}
 
 // Harp App Register Setup.
 const size_t reg_count = 8;
@@ -112,13 +105,32 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16}
 };
 
+inline void enqueue_harp_event(msg_type_t msg_type, uint8_t reg_address, uint64_t timestamp)
+{
+    uint8_t idx = reg_address - APP_REG_START_ADDRESS;
+    const RegSpecs& spec = app_reg_specs[idx];
+    harp_event_t event;
+    event.timestamp = timestamp;
+    event.reg_address = reg_address;
+    event.msg_type = msg_type;
+    event.num_bytes = spec.num_bytes;
+    event.payload_type = spec.payload_type;
+    memcpy(event.payload, (const void*)spec.base_ptr, spec.num_bytes);
+    queue_try_add(&harp_event_queue, &event);
+}
+
+inline void enqueue_harp_event(msg_type_t msg_type, uint8_t reg_address)
+{
+    enqueue_harp_event(msg_type, reg_address, HarpCore::harp_time_us_64());
+}
+
 void gpio_callback(uint gpio, uint32_t events)
 {
     uint32_t gpio_state = gpio_get_all();
     app_regs.di_state = 0;
     app_regs.di_state |= (gpio_state & 0xC) >> 2;
     app_regs.di_state |= (gpio_state & 0x7000) >> 10;
-    enqueue_harp_event(APP_REG_START_ADDRESS);
+    enqueue_harp_event(EVENT, APP_REG_START_ADDRESS);
 }
 
 void write_do_set(msg_t &msg)
@@ -157,13 +169,13 @@ int64_t pulse_callback(alarm_id_t id, void *user_data)
 
     // We arbitrarily choose to share the timestamp for the two events
     uint64_t harp_time_us = HarpCore::harp_time_us_64();
-    enqueue_harp_event((uint8_t)(APP_REG_START_ADDRESS + 2), harp_time_us);
+    enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 2), harp_time_us);
 
     if (pulse_train->timer.delay_us == 0)
     {
         pulse_train->timer.alarm_id = 0;
         app_regs.stop_pulse_train = pulse_train->output_mask;
-        enqueue_harp_event((uint8_t)(APP_REG_START_ADDRESS + 6), harp_time_us);
+        enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 6), harp_time_us);
     }
     return 0;
 }
@@ -187,7 +199,7 @@ bool pulse_train_callback(repeating_timer_t *rt)
 
     gpio_set_mask(pulse_train->output_mask << DO0_PIN);
 
-    enqueue_harp_event((uint8_t)(APP_REG_START_ADDRESS + 1));
+    enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 1));
     return pulse_train->timer.delay_us != 0;
 }
 
@@ -285,7 +297,7 @@ void configure_gpio(void)
     gpio_set_irq_enabled(12, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(14, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
-    queue_init(&harp_event_queue, sizeof(harp_event_t), 8);
+    queue_init(&harp_event_queue, sizeof(harp_event_t), 32);
 }
 
 void enable_gpio(bool enabled)
@@ -429,7 +441,9 @@ void update_app_state()
     harp_event_t harp_event;
     while (events_active && queue_try_remove(&harp_event_queue, &harp_event))
     {
-        HarpCore::send_harp_reply(EVENT, harp_event.reg_address, harp_event.timestamp);
+        HarpCore::send_harp_reply(harp_event.msg_type, harp_event.reg_address,
+                                  harp_event.payload, harp_event.num_bytes,
+                                  harp_event.payload_type, harp_event.timestamp);
     }
 }
 
