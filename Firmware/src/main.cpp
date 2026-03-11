@@ -43,7 +43,7 @@ struct pulse_train_t
 };
 pulse_train_t pulse_train_timers[pulse_train_count];
 
-// Repeating timer and buffers for ADC sampling using 
+// Repeating timer and buffers for ADC sampling using
 // Pointer to an address is required for the reinitialization DMA channel.
 uint16_t adc_vals[3] = {0, 0, 0};
 uint16_t* data_ptr[1] = {adc_vals};
@@ -61,8 +61,18 @@ struct adc_queue_item_t
     uint64_t timestamp;
     uint16_t analog_data[3];
 };
+struct harp_event_t
+{
+    uint64_t timestamp;
+    uint8_t reg_address;
+    msg_type_t msg_type;
+    uint8_t num_bytes;
+    reg_type_t payload_type;
+    uint8_t payload[16]; // TODO... For now, the largest register is start_pulse_train, 4×uint32 = 16 bytes
+};
 #pragma pack(pop)
 adc_queue_item_t adc_queue_current;
+static queue_t harp_event_queue;
 
 // Harp App Register Setup.
 const size_t reg_count = 8;
@@ -95,13 +105,32 @@ RegSpecs app_reg_specs[reg_count]
     {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16}
 };
 
+inline void enqueue_harp_event(msg_type_t msg_type, uint8_t reg_address, uint64_t timestamp)
+{
+    uint8_t idx = reg_address - APP_REG_START_ADDRESS;
+    const RegSpecs& spec = app_reg_specs[idx];
+    harp_event_t event;
+    event.timestamp = timestamp;
+    event.reg_address = reg_address;
+    event.msg_type = msg_type;
+    event.num_bytes = spec.num_bytes;
+    event.payload_type = spec.payload_type;
+    memcpy(event.payload, (const void*)spec.base_ptr, spec.num_bytes);
+    queue_try_add(&harp_event_queue, &event);
+}
+
+inline void enqueue_harp_event(msg_type_t msg_type, uint8_t reg_address)
+{
+    enqueue_harp_event(msg_type, reg_address, HarpCore::harp_time_us_64());
+}
+
 void gpio_callback(uint gpio, uint32_t events)
 {
     uint32_t gpio_state = gpio_get_all();
     app_regs.di_state = 0;
     app_regs.di_state |= (gpio_state & 0xC) >> 2;
     app_regs.di_state |= (gpio_state & 0x7000) >> 10;
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS);
+    enqueue_harp_event(EVENT, APP_REG_START_ADDRESS);
 }
 
 void write_do_set(msg_t &msg)
@@ -138,15 +167,15 @@ int64_t pulse_callback(alarm_id_t id, void *user_data)
     app_regs.do_clear = pulse_train->output_mask;
     gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
 
-    // Emit stop notifications for pulse and pulse train
+    // We arbitrarily choose to share the timestamp for the two events
     uint64_t harp_time_us = HarpCore::harp_time_us_64();
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 2, harp_time_us);
+    enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 2), harp_time_us);
+
     if (pulse_train->timer.delay_us == 0)
     {
-        // Mark timer as cancelled if pulse train stops
         pulse_train->timer.alarm_id = 0;
         app_regs.stop_pulse_train = pulse_train->output_mask;
-        HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 6, harp_time_us);
+        enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 6), harp_time_us);
     }
     return 0;
 }
@@ -169,7 +198,8 @@ bool pulse_train_callback(repeating_timer_t *rt)
     add_alarm_in_us(pulse_train->pulse_width_us, pulse_callback, pulse_train, true);
 
     gpio_set_mask(pulse_train->output_mask << DO0_PIN);
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 1);
+
+    enqueue_harp_event(EVENT, (uint8_t)(APP_REG_START_ADDRESS + 1));
     return pulse_train->timer.delay_us != 0;
 }
 
@@ -184,7 +214,7 @@ void write_start_pulse_train(msg_t& msg)
     pulse_train->pulse_width_us = app_regs.start_pulse_train[1];
     pulse_train->pulse_period_us = app_regs.start_pulse_train[2];
     pulse_train->pulse_count = app_regs.start_pulse_train[3];
-    
+
     // Cancel any existing timer
     if (cancel_repeating_timer(&pulse_train->timer))
     {
@@ -213,14 +243,14 @@ bool adc_callback(repeating_timer_t *rt)
         return false;
 
     rt->delay_us = -adc_period_us;
-    
+
     // Mask the values to 12 bits (0xFFF) to ensure only valid ADC bits are used
     adc_queue_item_t item;
     item.timestamp = HarpCore::harp_time_us_64();
     item.analog_data[0] = adc_vals[0] & 0xFFF;
     item.analog_data[1] = adc_vals[1] & 0xFFF;
     item.analog_data[2] = adc_vals[2] & 0xFFF;
-    queue_add_blocking(&adc_queue, &item);
+    queue_try_add(&adc_queue, &item);
     return true;
 }
 
@@ -267,6 +297,7 @@ void configure_gpio(void)
     gpio_set_irq_enabled(12, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(14, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
+    queue_init(&harp_event_queue, sizeof(harp_event_t), 32);
 }
 
 void enable_gpio(bool enabled)
@@ -406,6 +437,14 @@ void update_app_state()
         app_regs.analog_data[2] = adc_queue_current.analog_data[2];
         HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7, adc_queue_current.timestamp);
     }
+
+    harp_event_t harp_event;
+    while (events_active && queue_try_remove(&harp_event_queue, &harp_event))
+    {
+        HarpCore::send_harp_reply(harp_event.msg_type, harp_event.reg_address,
+                                  harp_event.payload, harp_event.num_bytes,
+                                  harp_event.payload_type, harp_event.timestamp);
+    }
 }
 
 // Create Harp App.
@@ -427,7 +466,7 @@ int main()
     app.set_synchronizer(&sync);
     configure_gpio();
     configure_adc();
-    
+
     while(true)
     {
         app.run();
