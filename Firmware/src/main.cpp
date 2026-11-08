@@ -10,14 +10,9 @@
 
 // Create device name array.
 const uint16_t who_am_i = 123;
-const uint8_t hw_version_major = 1;
-const uint8_t hw_version_minor = 0;
-const uint8_t assembly_version = 0;
-const uint8_t harp_version_major = 2;
-const uint8_t harp_version_minor = 0;
-const uint8_t fw_version_major = 0;
-const uint8_t fw_version_minor = 1;
-const uint16_t serial_number = 0x0;
+const semver_t fw_version = {0, 1, 0};
+const semver_t hw_version = {1, 0, 0};
+const uint8_t interface_hash[20] = {0};
 
 // Harp App setup.
 const uint32_t DO0_PIN = 15;
@@ -64,11 +59,7 @@ struct adc_queue_item_t
 #pragma pack(pop)
 adc_queue_item_t adc_queue_current;
 
-// Harp App Register Setup.
-const size_t reg_count = 8;
-
 // Define register contents.
-#pragma pack(push, 1)
 struct app_regs_t
 {
     volatile uint8_t di_state;
@@ -80,20 +71,6 @@ struct app_regs_t
     volatile uint8_t stop_pulse_train;
     volatile uint16_t analog_data[3];
 } app_regs;
-#pragma pack(pop)
-
-// Define register "specs."
-RegSpecs app_reg_specs[reg_count]
-{
-    {(uint8_t*)&app_regs.di_state, sizeof(app_regs.di_state), U8},
-    {(uint8_t*)&app_regs.do_set, sizeof(app_regs.do_set), U8},
-    {(uint8_t*)&app_regs.do_clear, sizeof(app_regs.do_clear), U8},
-    {(uint8_t*)&app_regs.do_toggle, sizeof(app_regs.do_toggle), U8},
-    {(uint8_t*)&app_regs.do_state, sizeof(app_regs.do_state), U8},
-    {(uint8_t*)&app_regs.start_pulse_train, sizeof(app_regs.start_pulse_train), U32},
-    {(uint8_t*)&app_regs.stop_pulse_train, sizeof(app_regs.stop_pulse_train), U8},
-    {(uint8_t*)&app_regs.analog_data, sizeof(app_regs.analog_data), U16}
-};
 
 void gpio_callback(uint gpio, uint32_t events)
 {
@@ -101,7 +78,7 @@ void gpio_callback(uint gpio, uint32_t events)
     app_regs.di_state = 0;
     app_regs.di_state |= (gpio_state & 0xC) >> 2;
     app_regs.di_state |= (gpio_state & 0x7000) >> 10;
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS);
+    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS);
 }
 
 void write_do_set(msg_t &msg)
@@ -140,13 +117,13 @@ int64_t pulse_callback(alarm_id_t id, void *user_data)
 
     // Emit stop notifications for pulse and pulse train
     uint64_t harp_time_us = HarpCore::harp_time_us_64();
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 2, harp_time_us);
+    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 2, harp_time_us);
     if (pulse_train->timer.delay_us == 0)
     {
         // Mark timer as cancelled if pulse train stops
         pulse_train->timer.alarm_id = 0;
         app_regs.stop_pulse_train = pulse_train->output_mask;
-        HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 6, harp_time_us);
+        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 6, harp_time_us);
     }
     return 0;
 }
@@ -169,7 +146,7 @@ bool pulse_train_callback(repeating_timer_t *rt)
     add_alarm_in_us(pulse_train->pulse_width_us, pulse_callback, pulse_train, true);
 
     gpio_set_mask(pulse_train->output_mask << DO0_PIN);
-    HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 1);
+    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 1);
     return pulse_train->timer.delay_us != 0;
 }
 
@@ -189,7 +166,7 @@ void write_start_pulse_train(msg_t& msg)
     if (cancel_repeating_timer(&pulse_train->timer))
     {
         app_regs.stop_pulse_train = output_mask;
-        HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 6);
+        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 6);
     }
 
     // Arm repeating timer and immediately arm the first pulse
@@ -224,18 +201,28 @@ bool adc_callback(repeating_timer_t *rt)
     return true;
 }
 
-// Define register read-and-write handler functions.
-RegFnPair reg_handler_fns[reg_count]
+// Define register specs with their read-and-write handler functions.
+RegSpec app_reg_specs[]
 {
-    {&HarpCore::read_reg_generic, &HarpCore::write_to_read_only_reg_error},
-    {&HarpCore::read_reg_generic, &write_do_set},
-    {&HarpCore::read_reg_generic, &write_do_clear},
-    {&HarpCore::read_reg_generic, &write_do_toggle},
-    {&HarpCore::read_reg_generic, &write_do_state},
-    {&HarpCore::read_reg_generic, &write_start_pulse_train},
-    {&HarpCore::read_reg_generic, &write_stop_pulse_train},
-    {&HarpCore::read_reg_generic, &HarpCore::write_to_read_only_reg_error}
+    RegSpec::U8(&app_regs.di_state,
+        HarpCore::read_reg_generic, HarpCore::write_reg_error),
+    RegSpec::U8(&app_regs.do_set,
+        HarpCore::read_reg_generic, write_do_set),
+    RegSpec::U8(&app_regs.do_clear,
+        HarpCore::read_reg_generic, write_do_clear),
+    RegSpec::U8(&app_regs.do_toggle,
+        HarpCore::read_reg_generic, write_do_toggle),
+    RegSpec::U8(&app_regs.do_state,
+        HarpCore::read_reg_generic, write_do_state),
+    RegSpec::U32Array(&app_regs.start_pulse_train, 4,
+        HarpCore::read_reg_generic, write_start_pulse_train),
+    RegSpec::U8(&app_regs.stop_pulse_train,
+        HarpCore::read_reg_generic, write_stop_pulse_train),
+    RegSpec::U16Array(&app_regs.analog_data, 3,
+        HarpCore::read_reg_generic, HarpCore::write_reg_error)
 };
+
+const size_t app_reg_count = sizeof(app_reg_specs) / sizeof(RegSpec);
 
 void app_reset()
 {
@@ -404,19 +391,16 @@ void update_app_state()
         app_regs.analog_data[0] = adc_queue_current.analog_data[0];
         app_regs.analog_data[1] = adc_queue_current.analog_data[1];
         app_regs.analog_data[2] = adc_queue_current.analog_data[2];
-        HarpCore::send_harp_reply(EVENT, APP_REG_START_ADDRESS + 7, adc_queue_current.timestamp);
+        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 7, adc_queue_current.timestamp);
     }
 }
 
 // Create Harp App.
-HarpCApp& app = HarpCApp::init(who_am_i, hw_version_major, hw_version_minor,
-                               assembly_version,
-                               harp_version_major, harp_version_minor,
-                               fw_version_major, fw_version_minor,
-                               serial_number, "Hobgoblin",
+HarpCApp& app = HarpCApp::init(who_am_i, fw_version, hw_version,
+                               "Hobgoblin",
                                (const uint8_t*)GIT_HASH, // in CMakeLists.txt.
-                               &app_regs, app_reg_specs,
-                               reg_handler_fns, reg_count, update_app_state,
+                               interface_hash,
+                               app_reg_specs, app_reg_count, update_app_state,
                                app_reset);
 
 // Core0 main.
