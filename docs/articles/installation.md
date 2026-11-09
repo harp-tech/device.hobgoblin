@@ -8,9 +8,10 @@ This page covers the software packages for the Hobgoblin device, as well as how 
 
 The Harp Hobgoblin is designed for use with the [Bonsai](https://bonsai-rx.org/) visual reactive programming language.
 
-1. Install the `Harp.Hobgoblin` package using the [Bonsai package manager](https://bonsai-rx.org/docs/articles/packages.html).
-2. Insert the `Device` source from the editor toolbox.
-3. For additional documentation and examples, refer to the [official Harp documentation](https://harp-tech.org/articles/operators.html).
+- Download and install [Bonsai](https://bonsai-rx.org/docs/articles/installation.html).
+- Install the `Harp.Hobgoblin` package using the [Bonsai package manager](https://bonsai-rx.org/docs/articles/packages.html).
+
+To test the device, follow the first workflow in [Bonsai](bonsai.md).
 
 # [Python](#tab/python)
 
