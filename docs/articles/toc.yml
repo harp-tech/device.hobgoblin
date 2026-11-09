@@ -1,0 +1,8 @@
+- name: Introduction
+- href: ../index.md
+- name: Getting started
+- href: assembly.md
+- href: installation.md
+- name: Development
+- href: modifying.md
+- href: firmware.md

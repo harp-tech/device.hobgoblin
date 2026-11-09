@@ -1,0 +1,10 @@
+apiRules:
+- exclude:
+    hasAttribute:
+      uid: System.ObsoleteAttribute
+- include:
+    uidRegex: ^Harp\.Hobgoblin\.(AsyncDevice|CreateMessage|DeviceDataWriter|FilterRegister|Format|GetDeviceMetadata|GroupByRegister|Parse)$
+    type: Type
+- exclude:
+    uidRegex: ^Harp\.Hobgoblin\.[^.]+$
+    type: Type
