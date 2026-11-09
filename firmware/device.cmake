@@ -1,0 +1,40 @@
+# Device metadata read from device.yml: the device name, the firmware and
+# hardware versions, and the interface hash reported in R_VERSION.
+set(DEVICE_METADATA ${CMAKE_CURRENT_LIST_DIR}/../device.yml)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${DEVICE_METADATA})
+
+file(STRINGS ${DEVICE_METADATA} DEVICE_FIELDS REGEX "^(device|firmwareVersion|hardwareTargets):")
+string(REGEX MATCH "device: *([A-Za-z0-9]+)" _ "${DEVICE_FIELDS}")
+set(DEVICE_NAME ${CMAKE_MATCH_1})
+string(REGEX MATCH "firmwareVersion: *\"?([0-9.]+)" _ "${DEVICE_FIELDS}")
+set(FIRMWARE_VERSION ${CMAKE_MATCH_1} CACHE STRING "Firmware version as major.minor[.patch]")
+string(REGEX MATCH "hardwareTargets: *\"?([0-9.]+)" _ "${DEVICE_FIELDS}")
+set(HARDWARE_VERSION ${CMAKE_MATCH_1} CACHE STRING "Hardware version as major.minor[.patch]")
+
+function(parse_version prefix version)
+    if(NOT version MATCHES "^v?([0-9]+)\\.([0-9]+)(\\.([0-9]+))?")
+        message(FATAL_ERROR "Invalid ${prefix} version '${version}'")
+    endif()
+    set(patch 0)
+    if(CMAKE_MATCH_4)
+        set(patch ${CMAKE_MATCH_4})
+    endif()
+    set(${prefix}_VERSION_MAJOR ${CMAKE_MATCH_1} PARENT_SCOPE)
+    set(${prefix}_VERSION_MINOR ${CMAKE_MATCH_2} PARENT_SCOPE)
+    set(${prefix}_VERSION_PATCH ${patch} PARENT_SCOPE)
+endfunction()
+parse_version(FW "${FIRMWARE_VERSION}")
+parse_version(HW "${HARDWARE_VERSION}")
+
+# SHA-1 of the file encoded as UTF-8 with no byte order mark and LF line
+# endings, so the hash does not depend on how the repository was checked out.
+file(READ ${DEVICE_METADATA} DEVICE_METADATA_BOM LIMIT 3 HEX)
+if(DEVICE_METADATA_BOM STREQUAL "efbbbf")
+    file(READ ${DEVICE_METADATA} DEVICE_METADATA_TEXT OFFSET 3)
+else()
+    file(READ ${DEVICE_METADATA} DEVICE_METADATA_TEXT)
+endif()
+string(REPLACE "\r\n" "\n" DEVICE_METADATA_TEXT "${DEVICE_METADATA_TEXT}")
+string(SHA1 INTERFACE_HASH_STRING "${DEVICE_METADATA_TEXT}")
+string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," INTERFACE_HASH "${INTERFACE_HASH_STRING}")
+string(REGEX REPLACE ",$" "" INTERFACE_HASH "${INTERFACE_HASH}")

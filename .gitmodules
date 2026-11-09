@@ -1,3 +1,6 @@
 [submodule "Firmware/core.pico"]
-	path = Firmware/core.pico
+	path = firmware/lib/core.pico
 	url = https://github.com/harp-tech/core.pico.git
+[submodule "docs/harp-docfx"]
+	path = docs/harp-docfx
+	url = https://github.com/harp-tech/docfx-tools

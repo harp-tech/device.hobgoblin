@@ -1,5 +1,19 @@
 Copyright (C) harp-tech and Contributors
 
+The Harp Hobgoblin device is released under several licenses, according to
+the folder each file is in:
+
+* firmware: MIT, see firmware/LICENSE
+* software: MIT, see software/dotnet/LICENSE and software/python/LICENSE
+* docs: CC BY-SA 4.0 for content, see docs/LICENSE, and MIT for code,
+  see docs/LICENSE-CODE
+* Third-party components, such as the firmware libraries in firmware/lib and
+  the documentation template in docs/harp-docfx, are licensed under the terms
+  provided by their authors.
+* Everything else, including device.yml, the device interface from which
+  the software interfaces are generated, and the build configuration, is
+  licensed under the MIT license below.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to
