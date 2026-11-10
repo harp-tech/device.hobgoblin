@@ -1,8 +1,14 @@
 - name: Introduction
 - href: ../index.md
+- name: Specs
+- href: device.md
 - name: Getting started
 - href: assembly.md
 - href: installation.md
+- href: bonsai.md
+- name: Tutorials
+- href: acquisition-and-control.md
+- href: reaction-time-task.md
 - name: Development
 - href: modifying.md
 - href: firmware.md

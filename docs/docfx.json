@@ -88,6 +88,7 @@
     "xref": [
       "https://harp-tech.org/xrefmap.yml",
       "https://bonsai-rx.org/docs/xrefmap.yml",
+      "https://bonsai-rx.org/gui/xrefmap.yml",
       "https://horizongir.github.io/reactive/xrefmap.yml"
     ]
   }
