@@ -52,7 +52,7 @@ In Bonsai:
 
 ### Exercise 2: Acquiring timestamped data
 
-One of the main advantages of devices in the Harp ecosystem is that all [`HarpMessage`] data are hardware-timestamped, rather than relying on software timestamping by the operating system, which is susceptible to jitter. To access hardware timestamped data, make the follow modications to the previous workflow.
+One of the main advantages of devices in the Harp ecosystem is that all [`HarpMessage`] data are hardware-timestamped, rather than relying on software timestamping by the operating system, which is susceptible to jitter. To access hardware timestamped data, make the following modifications to the previous workflow.
 
 :::workflow
 ![Acquiring Timestamped Data](../workflows/hobgoblin-acquisition-analogtimestamp.bonsai)
@@ -111,7 +111,7 @@ analog_data["Value.AnalogInput0"].plot()
 
 ### Exercise 5: Controlling digital output
 
-In the control section of this tutorial, we will send commands to turn on and off a LED. Connect one of the LED modules to digital output channel `GP15` on the `Hobgoblin`.
+In the control section of this tutorial, we will send commands to turn on and off an LED. Connect one of the LED modules to digital output channel `GP15` on the `Hobgoblin`.
 
 > [!TIP]
 > You can use another actuator (such as an active buzzer) and any of the other digital output channels (`GP15` through `GP22`) by changing the appropriate properties.
@@ -264,11 +264,7 @@ analog_data.plot()
 [`KeyDown`]: xref:Bonsai.Windows.Input.KeyDown
 [`Merge`]: xref:Bonsai.Reactive.Merge
 [`Parse`]: xref:Harp.Hobgoblin.Parse
-[`Parse (Harp.Hobgoblin)`]: xref:Harp.Hobgoblin.Parse
-[`PublishSubject`]: xref:Bonsai.Reactive.PublishSubject
 [`RollingGraph`]: xref:Bonsai.Gui.ZedGraph.RollingGraphBuilder
-[`SubscribeSubject`]: xref:Bonsai.Expressions.SubscribeSubject
 [`TimestampedAnalogData`]: xref:Harp.Hobgoblin.TimestampedAnalogData
 [`TimestampedDigitalOutputSet`]: xref:Harp.Hobgoblin.TimestampedDigitalOutputSet
 [`TimestampedDigitalOutputClear`]: xref:Harp.Hobgoblin.TimestampedDigitalOutputClear
-[`Zip`]: xref:Bonsai.Reactive.Zip

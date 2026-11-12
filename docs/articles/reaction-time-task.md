@@ -17,14 +17,14 @@ stateDiagram-v2
     Fail --> [*]
 ```
 
-The task begins with an inter-trial interval (`ITI`), followed by stimulus presentation (`ON`). After stimulus onset, advancement to the next state can happen only when the subject presses the button (`success`) or a timeout elapses (`miss`). Depending on which event is triggered first, the task advances either to the `Reward` state, or `Fail` state. At the end, the task goes back to the beginning of the ITI state for the next trial.
+The task begins with an inter-trial interval (`ITI`), followed by stimulus presentation (`ON`). After stimulus onset, advancement to the next state can happen only when the subject presses the button (`hit`) or a timeout elapses (`miss`). Depending on which event is triggered first, the task advances either to the `Reward` state, or `Fail` state. At the end, the task goes back to the beginning of the ITI state for the next trial.
 
 ## Prerequisites
 
 - Install Bonsai and the `Harp.Hobgoblin` package, as described in [Installation](installation.md).
 - Install the [`Bonsai.Numerics`](https://bonsai-rx.org/numerics/) package from the [Bonsai package manager](https://bonsai-rx.org/docs/articles/packages.html).
 
-### Exercise 1: Generating a fixed-interval stimulus
+## Exercise 1: Generating a fixed-interval stimulus
 
 In this first exercise, you will assemble the basic hardware and software components required to implement the reaction time task. Connect the LED to digital output channel `GP15` on the `Hobgoblin`. Connect the push button to digital input channel `GP2` on the `Hobgoblin`. 
 
@@ -40,7 +40,7 @@ Next, we will set up our `Hobgoblin`.
 :::
 
 - Insert a [`Device`] operator and set the `PortName` property.
-- Insert a [`DeviceDataWriter`] and set the `Path` property. Connecting it directly to the device ensures thats all events are logged.
+- Insert a [`DeviceDataWriter`] and set the `Path` property. Connecting it directly to the device ensures that all events are logged.
 - During this tutorial we will need to have the ability to send/receive commands from distinct places in the workflow. To allow this kind of "many-to-one"/"one-to-many" communication, we will:
     - Insert a [`PublishSubject`] operator and name it `Hobgoblin Events`. This operator broadcasts events from the `Hobgoblin`, which you can receive at multiple points in the workflow using a [`SubscribeSubject`].
     - Right-click the [`Device`] operator, select `Create Source (Bonsai.Harp.HarpMessage)` > [`BehaviorSubject`]. Name the generated ``BehaviorSubject`1`` operator `Hobgoblin Commands`. Connect it as input to the [`Device`] operator.
@@ -66,7 +66,7 @@ Lastly, we will set up a fixed-interval blinking LED as our stimulus.
 - Insert a [`Repeat`] operator.
 - Run the workflow, and verify that the LED is blinking.
 
-### Exercise 2: Measuring reaction time
+## Exercise 2: Measuring reaction time
 
 :::workflow
 ![Hobgoblin Reaction Time Measurement](../workflows/hobgoblin-reactiontime-measurement.bonsai)
@@ -81,7 +81,7 @@ Lastly, we will set up a fixed-interval blinking LED as our stimulus.
 >[!TIP]
 > We use separate `Hobgoblin Events` operators to avoid issues with [branching](https://bonsai-rx.org/docs/articles/subjects.html#branching-subjects). See also [workflow guidelines](https://bonsai-rx.org/docs/articles/workflow-guidelines.html)
 
-### Exercise 3: Analyzing reaction time
+## Exercise 3: Analyzing reaction time
 
 We will take a brief detour from Bonsai to look at how to visualize the data we have recorded. This section assumes you already have a Python environment with [`pandas`](https://pandas.pydata.org/), [`matplotlib`](https://matplotlib.org/), [`harp-data`](https://harp-tech.org/python/) and the `harp-hobgoblin` interface installed, as described in [Acquisition and control](acquisition-and-control.md#exercise-4-visualizing-recorded-data).
 
@@ -129,7 +129,7 @@ print(f"There were {num_valid_responses} valid responses out of {num_total_trial
 pd.Series(valid_response_times).plot(kind="hist")
 ```
 
-### Exercise 4: Driving state transitions with external behavior events
+## Exercise 4: Driving state transitions with external behavior events
 
 In order to translate our simple reaction time task in the previous exercises into a proper state machine, we need to split up the fixed interval stimulus into different states. It is often convenient to consider the inter-trial interval period as the initial state, followed by stimulus presentation. 
 
@@ -138,7 +138,7 @@ In order to translate our simple reaction time task in the previous exercises in
 :::
 
 - Copy the workflows from [Exercise 1](#exercise-1-generating-a-fixed-interval-stimulus).
-- Select the [`Timer`] operator and set its `DueTime` property to 3 second.
+- Select the [`Timer`] operator and set its `DueTime` property to 3 seconds.
 - Click and drag to select both the [`CreateMessage`] ([`DigitalOutputSetPayload`]) and `Hobgoblin Commands` operators.
 - Right-click, select `Group` > `Sink (Reactive)`. Set the `Name` property to `StimOn`.
 - Click and drag to select both the [`CreateMessage`] ([`DigitalOutputClearPayload`]) and `Hobgoblin Commands` operators.
@@ -168,9 +168,9 @@ In order to translate our simple reaction time task in the previous exercises in
 - Run the workflow a couple of times and validate the state machine is responding to the button press.
 
 > [!Note]
-> The [`Condition`] operator allows you to specify arbitrary rules for accepting or rejecting inputs. The `WorkflowOutput` node always needs to be specified with a `bool` input, the result of whether the input is accepted (`True`) or rejected (`False`). Only inputs which pass the filter specified inside the [`Condition`] are allowed to proceed. Using a [`HasFlag`] operator here allows us to filter only messages from that pin and also has the beneficial side effect of only detecting a button press (when the value changes fron `None` > `GP2`) instead of a button release (`GP2`>`None`).
+> The [`Condition`] operator allows you to specify arbitrary rules for accepting or rejecting inputs. The `WorkflowOutput` node always needs to be specified with a `bool` input, the result of whether the input is accepted (`True`) or rejected (`False`). Only inputs which pass the filter specified inside the [`Condition`] are allowed to proceed. Using a [`HasFlag`] operator here allows us to filter only messages from that pin and also has the beneficial side effect of only detecting a button press (when the value changes from `None` > `GP2`) instead of a button release (`GP2`>`None`).
 
-### Exercise 5: Timeout and choice
+## Exercise 5: Timeout and choice
 
 We will modify our previous workflow to include a timeout during which the responder must make a choice.
 
@@ -187,7 +187,7 @@ We will modify our previous workflow to include a timeout during which the respo
 
 _Describe in your own words what the above modified workflow is doing._
 
-### Exercise 6: Specifying conditional task outcomes
+## Exercise 6: Specifying conditional task outcomes
 
 We will now modify our workflow to set up a transition to the next state.
 
@@ -227,21 +227,21 @@ For example, to make the LED blink three times in rapid succession for the `Rewa
 - Delete the `Source1` operator.
 - Copy the fixed-interval blinking LED from [Exercise 1](#exercise-1-generating-a-fixed-interval-stimulus).
 - In the [`Timer`] node, set both the `DueTime` and the `Period` properties to 100ms. 
-- In the [`Delay`] node, set the `DueTime` properties to 100ms.
+- In the [`Delay`] node, set the `DueTime` property to 100ms.
 - Delete the [`Repeat`] node.
 - Insert a [`RepeatCount`], set the `Count` property to 3.
 - Insert the [`Last`] operator, and connect it to `WorkflowOutput`.
 
 _Try out your state machine and check whether you understand the behavior of the reward signal._
 
-- Copy the workflow in the `Reward` node and paste it into the `Miss` condition.
+- Copy the workflow in the `Reward` node and paste it into the `Fail` node.
 - **Optional**: Modify the `Fail` state in some way to signal a different trial outcome (e.g. make the LED blink more times, or move a motor).
 
 - In the top-level workflow, insert a [`Merge`] operator and connect to it the outputs of both conditional branches and before the [`Repeat`] node.
 
 _Try out your state machine and introduce variations to the task behavior and conditions._
 
-### Exercise 7: Go/No-Go task
+## Exercise 7: Go/No-Go task
 
 Implement the following trial structure for a Go/No-Go task.
 
