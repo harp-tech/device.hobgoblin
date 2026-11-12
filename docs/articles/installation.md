@@ -36,11 +36,13 @@ The device restarts with the new firmware as soon as the copy completes.
 
 ### Updating the firmware
 
-A device that is already running Hobgoblin firmware can be updated from the command line with the [Harp toolkit](https://harp-tech.org/toolkit):
+A device that is already running Hobgoblin firmware can be updated from the command line with the [Harp toolkit](https://harp-tech.org/toolkit), version 0.6.0 or later:
 
 ```text
 dotnet tool install --global harp.toolkit
 harp.toolkit update Hobgoblin-fw0.2-harp2.0-hw1.0-ass0.uf2 --port COM3
 ```
+
+A Raspberry Pi Pico 2 running firmware 0.1 does not restart in BOOTSEL mode when the update requests it, so install version 0.2 on it as described in [Installing the firmware for the first time](#installing-the-firmware-for-the-first-time). Later versions can be installed from the command line.
 
 Updating some devices needs a driver or system package installed once on the computer, as described in [Devices built on the Pico core](https://harp-tech.org/toolkit/articles/update.html#devices-built-on-the-pico-core).
