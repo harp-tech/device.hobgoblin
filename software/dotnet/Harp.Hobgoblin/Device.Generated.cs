@@ -1827,7 +1827,7 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents the payload of the StartPulseTrain register.
+    /// Represents the StartPulseTrain payload.
     /// </summary>
     public struct StartPulseTrainPayload
     {
@@ -1876,12 +1876,10 @@ namespace Harp.Hobgoblin
         public uint PulseCount;
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the StartPulseTrain register.
+        /// Returns a <see cref="string"/> that represents the StartPulseTrain payload.
         /// </summary>
         /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// StartPulseTrain register.
+        /// A <see cref="string"/> that represents the StartPulseTrain payload.
         /// </returns>
         public override string ToString()
         {
@@ -1895,7 +1893,7 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents the payload of the AnalogData register.
+    /// Represents the AnalogData payload.
     /// </summary>
     public struct AnalogDataPayload
     {
@@ -1934,12 +1932,10 @@ namespace Harp.Hobgoblin
         public ushort AnalogInput2;
 
         /// <summary>
-        /// Returns a <see cref="string"/> that represents the payload of
-        /// the AnalogData register.
+        /// Returns a <see cref="string"/> that represents the AnalogData payload.
         /// </summary>
         /// <returns>
-        /// A <see cref="string"/> that represents the payload of the
-        /// AnalogData register.
+        /// A <see cref="string"/> that represents the AnalogData payload.
         /// </returns>
         public override string ToString()
         {
@@ -1957,11 +1953,39 @@ namespace Harp.Hobgoblin
     [Flags]
     public enum DigitalInputs : byte
     {
+        /// <summary>
+        /// Specifies that no flags are set.
+        /// </summary>
         None = 0x0,
+
+        /// <summary>
+        /// Digital input on pin GP2.
+        /// </summary>
+        [Description("Digital input on pin GP2.")]
         GP2 = 0x1,
+
+        /// <summary>
+        /// Digital input on pin GP3.
+        /// </summary>
+        [Description("Digital input on pin GP3.")]
         GP3 = 0x2,
+
+        /// <summary>
+        /// Digital input on pin GP12.
+        /// </summary>
+        [Description("Digital input on pin GP12.")]
         GP12 = 0x4,
+
+        /// <summary>
+        /// Digital input on pin GP13.
+        /// </summary>
+        [Description("Digital input on pin GP13.")]
         GP13 = 0x8,
+
+        /// <summary>
+        /// Digital input on pin GP14.
+        /// </summary>
+        [Description("Digital input on pin GP14.")]
         GP14 = 0x10
     }
 
@@ -1971,14 +1995,57 @@ namespace Harp.Hobgoblin
     [Flags]
     public enum DigitalOutputs : byte
     {
+        /// <summary>
+        /// Specifies that no flags are set.
+        /// </summary>
         None = 0x0,
+
+        /// <summary>
+        /// Digital output on pin GP15.
+        /// </summary>
+        [Description("Digital output on pin GP15.")]
         GP15 = 0x1,
+
+        /// <summary>
+        /// Digital output on pin GP16.
+        /// </summary>
+        [Description("Digital output on pin GP16.")]
         GP16 = 0x2,
+
+        /// <summary>
+        /// Digital output on pin GP17.
+        /// </summary>
+        [Description("Digital output on pin GP17.")]
         GP17 = 0x4,
+
+        /// <summary>
+        /// Digital output on pin GP18.
+        /// </summary>
+        [Description("Digital output on pin GP18.")]
         GP18 = 0x8,
+
+        /// <summary>
+        /// Digital output on pin GP19.
+        /// </summary>
+        [Description("Digital output on pin GP19.")]
         GP19 = 0x10,
+
+        /// <summary>
+        /// Digital output on pin GP20.
+        /// </summary>
+        [Description("Digital output on pin GP20.")]
         GP20 = 0x20,
+
+        /// <summary>
+        /// Digital output on pin GP21.
+        /// </summary>
+        [Description("Digital output on pin GP21.")]
         GP21 = 0x40,
+
+        /// <summary>
+        /// Digital output on pin GP22.
+        /// </summary>
+        [Description("Digital output on pin GP22.")]
         GP22 = 0x80
     }
 

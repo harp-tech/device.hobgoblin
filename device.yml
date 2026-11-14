@@ -81,19 +81,45 @@ bitMasks:
   DigitalInputs:
     description: Specifies the state of port digital input lines.
     bits:
-      GP2: 0x1
-      GP3: 0x2
-      GP12: 0x4
-      GP13: 0x8
-      GP14: 0x10
+      GP2:
+        value: 0x1
+        description: Digital input on pin GP2
+      GP3:
+        value: 0x2
+        description: Digital input on pin GP3
+      GP12:
+        value: 0x4
+        description: Digital input on pin GP12
+      GP13:
+        value: 0x8
+        description: Digital input on pin GP13
+      GP14:
+        value: 0x10
+        description: Digital input on pin GP14
   DigitalOutputs:
     description: Specifies the state of port digital output lines.
     bits:
-      GP15: 0x1
-      GP16: 0x2
-      GP17: 0x4
-      GP18: 0x8
-      GP19: 0x10
-      GP20: 0x20
-      GP21: 0x40
-      GP22: 0x80
+      GP15:
+        value: 0x1
+        description: Digital output on pin GP15
+      GP16:
+        value: 0x2
+        description: Digital output on pin GP16
+      GP17:
+        value: 0x4
+        description: Digital output on pin GP17
+      GP18:
+        value: 0x8
+        description: Digital output on pin GP18
+      GP19:
+        value: 0x10
+        description: Digital output on pin GP19
+      GP20:
+        value: 0x20
+        description: Digital output on pin GP20
+      GP21:
+        value: 0x40
+        description: Digital output on pin GP21
+      GP22:
+        value: 0x80
+        description: Digital output on pin GP22
