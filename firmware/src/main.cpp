@@ -33,7 +33,12 @@ const int32_t adc_period_us = 4000;
 const int32_t adc_callback_delay_us = 80000;
 int adc_sample_channel;
 int adc_ctrl_channel;
+const uint adc_queue_size = 2;
 static queue_t adc_queue;
+
+// Queue for events raised in interrupt callbacks.
+const uint event_queue_size = 64;
+static queue_t event_queue;
 
 // Define queue item contents
 #pragma pack(push, 1)
@@ -42,8 +47,14 @@ struct adc_queue_item_t
     uint64_t timestamp;
     uint16_t analog_data[3];
 };
+
+struct event_queue_item_t
+{
+    uint64_t timestamp;
+    uint8_t address;
+    uint8_t value;
+};
 #pragma pack(pop)
-adc_queue_item_t adc_queue_current;
 
 // Define register contents.
 struct app_regs_t
@@ -58,13 +69,30 @@ struct app_regs_t
     volatile uint16_t analog_data[3];
 } app_regs;
 
-void gpio_callback(uint gpio, uint32_t events)
+// Never blocks, so it is safe to call from interrupts; drops the event if full.
+void queue_event(uint8_t address, uint8_t value, uint64_t harp_time_us)
+{
+    event_queue_item_t item{harp_time_us, address, value};
+    queue_try_add(&event_queue, &item);
+}
+
+uint8_t read_digital_inputs()
 {
     uint32_t gpio_state = gpio_get_all();
-    app_regs.di_state = 0;
-    app_regs.di_state |= (gpio_state & 0xC) >> 2;
-    app_regs.di_state |= (gpio_state & 0x7000) >> 10;
-    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS);
+    return ((gpio_state & 0xC) >> 2) | ((gpio_state & 0x7000) >> 10);
+}
+
+void gpio_callback(uint gpio, uint32_t events)
+{
+    // Capture the GPIO state and timestamp.
+    queue_event(HarpCore::APP_REG_START_ADDRESS, read_digital_inputs(),
+                HarpCore::harp_time_us_64());
+}
+
+void read_di_state(uint8_t address)
+{
+    app_regs.di_state = read_digital_inputs();
+    HarpCore::read_reg_generic(address);
 }
 
 void write_do_set(msg_t &msg)
@@ -98,18 +126,16 @@ void write_do_state(msg_t &msg)
 int64_t pulse_callback(alarm_id_t id, void *user_data)
 {
     pulse_train_t *pulse_train = (pulse_train_t *)user_data;
-    app_regs.do_clear = pulse_train->output_mask;
     gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
 
     // Emit stop notifications for pulse and pulse train
     uint64_t harp_time_us = HarpCore::harp_time_us_64();
-    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 2, harp_time_us);
+    queue_event(HarpCore::APP_REG_START_ADDRESS + 2, pulse_train->output_mask, harp_time_us);
     if (pulse_train->timer.delay_us == 0)
     {
         // Mark timer as cancelled if pulse train stops
         pulse_train->timer.alarm_id = 0;
-        app_regs.stop_pulse_train = pulse_train->output_mask;
-        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 6, harp_time_us);
+        queue_event(HarpCore::APP_REG_START_ADDRESS + 6, pulse_train->output_mask, harp_time_us);
     }
     return 0;
 }
@@ -132,7 +158,8 @@ bool pulse_train_callback(repeating_timer_t *rt)
     add_alarm_in_us(pulse_train->pulse_width_us, pulse_callback, pulse_train, true);
 
     gpio_set_mask(pulse_train->output_mask << DO0_PIN);
-    HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 1);
+    queue_event(HarpCore::APP_REG_START_ADDRESS + 1, pulse_train->output_mask,
+                HarpCore::harp_time_us_64());
     return pulse_train->timer.delay_us != 0;
 }
 
@@ -183,7 +210,9 @@ bool adc_callback(repeating_timer_t *rt)
     item.analog_data[0] = adc_vals[0] & 0xFFF;
     item.analog_data[1] = adc_vals[1] & 0xFFF;
     item.analog_data[2] = adc_vals[2] & 0xFFF;
-    queue_add_blocking(&adc_queue, &item);
+
+    // Never block in a timer callback: drop the samples if the queue is full.
+    queue_try_add(&adc_queue, &item);
     return true;
 }
 
@@ -191,7 +220,7 @@ bool adc_callback(repeating_timer_t *rt)
 RegSpec app_reg_specs[]
 {
     RegSpec::U8(&app_regs.di_state,
-        HarpCore::read_reg_generic, HarpCore::write_reg_error),
+        read_di_state, HarpCore::write_reg_error),
     RegSpec::U8(&app_regs.do_set,
         HarpCore::read_reg_generic, write_do_set),
     RegSpec::U8(&app_regs.do_clear,
@@ -234,6 +263,9 @@ void configure_gpio(void)
     gpio_set_dir_in_masked(DI_MASK);
     gpio_clr_mask(DO_MASK);
 
+    // Configure queue for interrupt events and avoid concurrency in outbound
+    // message buffers, i.e. avoid sending reply in GPIO and timer callbacks.
+    queue_init(&event_queue, sizeof(event_queue_item_t), event_queue_size);
     gpio_set_irq_callback(gpio_callback);
     gpio_set_irq_enabled(2, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(3, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
@@ -313,7 +345,7 @@ void configure_adc(void)
 
     // Configure queue for storing sample data and avoid concurrency in
     // outbound message buffers, i.e. avoid sending reply in timer callback.
-    queue_init(&adc_queue, sizeof(adc_queue_item_t), 2);
+    queue_init(&adc_queue, sizeof(adc_queue_item_t), adc_queue_size);
 }
 
 void enable_adc_events()
@@ -331,6 +363,9 @@ void enable_adc_events()
 
 void disable_adc_events()
 {
+    // Cancel the reporting timer so re-enabling events cannot add it twice.
+    cancel_repeating_timer(&adc_timer);
+
     // Ensure both DMA channels are fully stopped
     // Note: loop is needed since dma_channel_abort does not wait for CHAN_ABORT
     // https://github.com/raspberrypi/pico-sdk/issues/923
@@ -342,6 +377,9 @@ void disable_adc_events()
     // Stop the ADC and drain the FIFO.
     adc_run(false);
     adc_fifo_drain();
+
+    // Discard queued samples so they are not sent when events resume.
+    while (queue_try_remove(&adc_queue, nullptr));
 }
 
 void cancel_pulse_timers()
@@ -372,12 +410,24 @@ void update_app_state()
         events_active = false;
     }
 
-    if (events_active && queue_try_remove(&adc_queue, &adc_queue_current))
+    adc_queue_item_t sample;
+    if (events_active && queue_try_remove(&adc_queue, &sample))
     {
-        app_regs.analog_data[0] = adc_queue_current.analog_data[0];
-        app_regs.analog_data[1] = adc_queue_current.analog_data[1];
-        app_regs.analog_data[2] = adc_queue_current.analog_data[2];
-        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 7, adc_queue_current.timestamp);
+        app_regs.analog_data[0] = sample.analog_data[0];
+        app_regs.analog_data[1] = sample.analog_data[1];
+        app_regs.analog_data[2] = sample.analog_data[2];
+        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 7, sample.timestamp);
+    }
+
+    // Drain queued events even while disabled, so the queue never stays full.
+    event_queue_item_t event;
+    while (queue_try_remove(&event_queue, &event))
+    {
+        if (events_active)
+        {
+            HarpCore::send_harp_reply(EVENT, event.address, &event.value, sizeof(event.value),
+                                      reg_type_t::U8, event.timestamp);
+        }
     }
 }
 
@@ -392,7 +442,7 @@ HarpCApp& app = HarpCApp::init(HARP_DEVICE_ID, FW_VERSION, HW_VERSION,
 // Core0 main.
 int main()
 {
-// Init Synchronizer.
+    // Init Synchronizer.
     HarpSynchronizer& sync = HarpSynchronizer::init(uart1, HARP_SYNC_RX_PIN);
     app.set_synchronizer(&sync);
     configure_gpio();
