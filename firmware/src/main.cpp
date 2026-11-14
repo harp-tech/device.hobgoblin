@@ -164,7 +164,7 @@ void write_stop_pulse_train(msg_t& msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
 
-    uint8_t output_mask = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
+    uint8_t output_mask = app_regs.stop_pulse_train;
     cancel_repeating_timer(&pulse_train_timers[output_mask].timer);
 
     HarpCore::send_harp_reply(WRITE, msg.header.address);
