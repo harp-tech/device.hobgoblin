@@ -2,6 +2,8 @@
 
 The Harp Hobgoblin is a simple multi-purpose device for learning the basics of the Harp standard. The repository contains working device metadata, firmware and software interfaces, and the device is meant to be adapted and modified for a variety of purposes.
 
+![Harp Hobgoblin on a Raspberry Pi Pico 2 mounted on a Gravity: Expansion Board](images/device-hobgoblin-pico2.png){width=300}
+
 The Hobgoblin runs directly on a [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) or [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/), and provides:
 
 - Five digital inputs reported whenever any of them changes.

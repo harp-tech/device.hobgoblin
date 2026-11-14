@@ -49,57 +49,81 @@ class DigitalInputs(enum.IntFlag):
     """Specifies the state of port digital input lines."""
 
     GP2 = 0x1
+    """Digital input on pin GP2"""
+
     GP3 = 0x2
+    """Digital input on pin GP3"""
+
     GP12 = 0x4
+    """Digital input on pin GP12"""
+
     GP13 = 0x8
+    """Digital input on pin GP13"""
+
     GP14 = 0x10
+    """Digital input on pin GP14"""
 
 
 class DigitalOutputs(enum.IntFlag):
     """Specifies the state of port digital output lines."""
 
     GP15 = 0x1
+    """Digital output on pin GP15"""
+
     GP16 = 0x2
+    """Digital output on pin GP16"""
+
     GP17 = 0x4
+    """Digital output on pin GP17"""
+
     GP18 = 0x8
+    """Digital output on pin GP18"""
+
     GP19 = 0x10
+    """Digital output on pin GP19"""
+
     GP20 = 0x20
+    """Digital output on pin GP20"""
+
     GP21 = 0x40
+    """Digital output on pin GP21"""
+
     GP22 = 0x80
+    """Digital output on pin GP22"""
 
 
 class DigitalInputStatePayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the DigitalInputState register."""
+    """Represents the DigitalInputState payload."""
 
     __value__: DigitalInputs = BitMask(enum=DigitalInputs)
 
 
 class DigitalOutputSetPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the DigitalOutputSet register."""
+    """Represents the DigitalOutputSet payload."""
 
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
 class DigitalOutputClearPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the DigitalOutputClear register."""
+    """Represents the DigitalOutputClear payload."""
 
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
 class DigitalOutputTogglePayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the DigitalOutputToggle register."""
+    """Represents the DigitalOutputToggle payload."""
 
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
 class DigitalOutputStatePayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the DigitalOutputState register."""
+    """Represents the DigitalOutputState payload."""
 
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
 class StartPulseTrainPayload(StructPayload[np.uint32], length=4):
-    """Represents the payload of the StartPulseTrain register."""
+    """Represents the StartPulseTrain payload."""
 
     digital_output: DigitalOutputs = BitMask(enum=DigitalOutputs, mask=0xFF)
     """Specifies the digital output lines set by each pulse of the pulse train."""
@@ -119,13 +143,13 @@ class StartPulseTrainPayload(StructPayload[np.uint32], length=4):
 
 
 class StopPulseTrainPayload(AnonymousPayload[np.uint8]):
-    """Represents the payload of the StopPulseTrain register."""
+    """Represents the StopPulseTrain payload."""
 
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
 class AnalogDataPayload(StructPayload[np.uint16], length=3):
-    """Represents the payload of the AnalogData register."""
+    """Represents the AnalogData payload."""
 
     analog_input0: np.uint16 = Field(IdentityConverter(np.uint16))
     """The analog value sampled from ADC channel 0."""
