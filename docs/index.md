@@ -7,7 +7,7 @@ The Harp Hobgoblin is a simple multi-purpose device for learning the basics of t
 The Hobgoblin runs directly on a [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) or [Raspberry Pi Pico 2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/), and provides:
 
 - Five digital inputs reported whenever any of them changes.
-- Eight digital outputs that can be set, cleared and toggled, or generate pulse trains.
+- Eight digital outputs that can be set, cleared and toggled, or run independent pulse trains.
 - Three analog inputs sampled continuously.
 - Hardware timestamping and synchronization with other [Harp](https://harp-tech.org/articles/about.html) devices.
 - [Bonsai](https://bonsai-rx.org/) integration for flexible experiment acquisition and control.
