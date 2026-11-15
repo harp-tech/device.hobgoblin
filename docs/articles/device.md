@@ -14,8 +14,10 @@ The pins are numbered as on the Raspberry Pi Pico, as printed on the Gravity: Ex
 | -------- | ---- |
 | Digital inputs | GP2, GP3, GP12, GP13, GP14 |
 | Digital outputs | GP15 to GP22, with hardware pulse trains on GP18, GP20 and GP22 |
-| Analog inputs | GP26, GP27, GP28, as channels 0, 1 and 2 |
+| Analog inputs | GP26, GP27, GP28, as channels 0, 1 and 2, reported at 250 Hz |
 | Harp synchronization clock input | GP5 |
+
+The analog inputs are sampled continuously, and each `AnalogData` event carries the latest value of each channel.
 
 ## Pulse trains
 
