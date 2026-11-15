@@ -30,9 +30,9 @@ inline constexpr uint8_t PULSE_EVENT_ENABLE_ADDRESS =
 // slices 1, 2 and 3, so each can run its train in hardware at its own frequency.
 constexpr size_t pulse_train_count = 8;
 constexpr uint8_t hardware_pulse_mask = 0xA8;
-constexpr uint32_t min_pulse_period_us = 1000;
+constexpr uint32_t min_pulse_period_us = 500;
 constexpr uint32_t min_hardware_period_us = 10;
-constexpr uint32_t max_pulse_event_rate_hz = 2000;
+constexpr uint32_t max_pulse_event_rate_hz = 4000;
 struct pulse_train_t
 {
     alarm_id_t alarm;
@@ -65,6 +65,7 @@ static queue_t adc_queue;
 
 // Queue for events raised in interrupt callbacks.
 const uint event_queue_size = 64;
+const size_t event_drain_batch = 16;
 static queue_t event_queue;
 
 // Define queue item contents
@@ -684,8 +685,9 @@ void update_app_state()
     }
 
     // Drain queued events even while disabled, so the queue never stays full.
+    // Sending a bounded batch per pass keeps commands answered under overload.
     event_queue_item_t event;
-    while (queue_try_remove(&event_queue, &event))
+    for (size_t i = 0; i < event_drain_batch && queue_try_remove(&event_queue, &event); i++)
     {
         if (events_active)
             send_queued_event(event);
