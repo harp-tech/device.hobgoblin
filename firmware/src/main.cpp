@@ -12,19 +12,36 @@
 // Harp App state.
 bool events_active = false;
 
-// Repeating timers for pulse control
-const size_t pulse_train_count = 256;
+// Addresses of the app registers used in the code, as declared in device.yml.
+inline constexpr uint8_t DIGITAL_INPUT_STATE_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 0;
+inline constexpr uint8_t DIGITAL_OUTPUT_SET_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 1;
+inline constexpr uint8_t ANALOG_DATA_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 5;
+inline constexpr uint8_t PULSE_TRAIN_GP15_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 6;
+inline constexpr uint8_t PULSE_EVENT_ENABLE_ADDRESS =
+    HarpCore::APP_REG_START_ADDRESS + 14;
+
+// Software pulse trains, one per digital output.
+constexpr size_t pulse_train_count = 8;
+constexpr uint32_t min_pulse_period_us = 1000;
+constexpr uint32_t max_pulse_event_rate_hz = 2000;
 struct pulse_train_t
 {
-    struct repeating_timer timer;
+    alarm_id_t alarm;
     uint8_t output_mask;
-    uint32_t pulse_width_us;
-    uint32_t pulse_period_us;
-    uint32_t pulse_count;
+    uint8_t generation;
+    bool high;
+    bool last_pulse;
+    uint32_t width_us;
+    uint32_t period_us;
+    uint32_t remaining;
 };
-pulse_train_t pulse_train_timers[pulse_train_count];
+pulse_train_t pulse_trains[pulse_train_count];
 
-// Repeating timer and buffers for ADC sampling using 
+// Repeating timer and buffers for ADC sampling using
 // Pointer to an address is required for the reinitialization DMA channel.
 uint16_t adc_vals[3] = {0, 0, 0};
 uint16_t* data_ptr[1] = {adc_vals};
@@ -64,9 +81,9 @@ struct app_regs_t
     volatile uint8_t do_clear;
     volatile uint8_t do_toggle;
     volatile uint8_t do_state;
-    volatile uint32_t start_pulse_train[4];
-    volatile uint8_t stop_pulse_train;
     volatile uint16_t analog_data[3];
+    volatile uint32_t pulse_train[pulse_train_count][3];
+    volatile uint8_t pulse_event_enable;
 } app_regs;
 
 // Never blocks, so it is safe to call from interrupts; drops the event if full.
@@ -85,7 +102,7 @@ uint8_t read_digital_inputs()
 void gpio_callback(uint gpio, uint32_t events)
 {
     // Capture the GPIO state and timestamp.
-    queue_event(HarpCore::APP_REG_START_ADDRESS, read_digital_inputs(),
+    queue_event(DIGITAL_INPUT_STATE_ADDRESS, read_digital_inputs(),
                 HarpCore::harp_time_us_64());
 }
 
@@ -95,105 +112,193 @@ void read_di_state(uint8_t address)
     HarpCore::read_reg_generic(address);
 }
 
+// One alarm per train alternates rising and falling edges. A negative return
+// reschedules relative to the previous target time, so the period never drifts.
+int64_t pulse_train_callback(alarm_id_t id, void *user_data)
+{
+    pulse_train_t *pulse_train = (pulse_train_t *)user_data;
+    if (!pulse_train->high)
+    {
+        gpio_set_mask(pulse_train->output_mask << DO0_PIN);
+        pulse_train->high = true;
+        if (app_regs.pulse_event_enable & pulse_train->output_mask)
+        {
+            queue_event(DIGITAL_OUTPUT_SET_ADDRESS, pulse_train->output_mask,
+                        HarpCore::harp_time_us_64());
+        }
+
+        // A count of zero runs until stopped.
+        if (pulse_train->remaining > 0)
+            pulse_train->last_pulse = --pulse_train->remaining == 0;
+
+        // Stay high when the width fills the period, except after the last pulse.
+        if (pulse_train->width_us < pulse_train->period_us || pulse_train->last_pulse)
+            return -(int64_t)pulse_train->width_us;
+        pulse_train->high = false;
+        return -(int64_t)pulse_train->period_us;
+    }
+
+    gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
+    pulse_train->high = false;
+    if (pulse_train->last_pulse)
+    {
+        // Report the end of the train on its register, see send_queued_event.
+        pulse_train->alarm = 0;
+        uint8_t index = __builtin_ctz(pulse_train->output_mask);
+        queue_event(PULSE_TRAIN_GP15_ADDRESS + index, pulse_train->generation,
+                    HarpCore::harp_time_us_64());
+        return 0;
+    }
+    return -(int64_t)(pulse_train->period_us - pulse_train->width_us);
+}
+
+void cancel_pulse_train(pulse_train_t *pulse_train)
+{
+    if (pulse_train->alarm > 0)
+        cancel_alarm(pulse_train->alarm);
+    pulse_train->alarm = 0;
+    pulse_train->high = false;
+}
+
+// Stop the trains on the specified lines, returning the lines that were running.
+uint8_t stop_pulse_trains(uint8_t output_mask)
+{
+    uint8_t stopped = 0;
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        pulse_train_t *pulse_train = &pulse_trains[i];
+        if ((output_mask & pulse_train->output_mask) && pulse_train->alarm > 0)
+        {
+            cancel_pulse_train(pulse_train);
+            app_regs.pulse_train[i][0] = 0;
+            stopped |= pulse_train->output_mask;
+        }
+    }
+    return stopped;
+}
+
+// Report trains stopped by a write, after the reply to that write.
+void send_pulse_train_stop_events(uint8_t stopped)
+{
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        if (events_active && (stopped & pulse_trains[i].output_mask))
+            HarpCore::send_harp_reply(EVENT, PULSE_TRAIN_GP15_ADDRESS + i);
+    }
+}
+
 void write_do_set(msg_t &msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t stopped = stop_pulse_trains(app_regs.do_set);
     gpio_set_mask(app_regs.do_set << DO0_PIN);
     HarpCore::send_harp_reply(WRITE, msg.header.address);
+    send_pulse_train_stop_events(stopped);
 }
 
 void write_do_clear(msg_t &msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t stopped = stop_pulse_trains(app_regs.do_clear);
     gpio_clr_mask(app_regs.do_clear << DO0_PIN);
     HarpCore::send_harp_reply(WRITE, msg.header.address);
+    send_pulse_train_stop_events(stopped);
 }
 
 void write_do_toggle(msg_t &msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t stopped = stop_pulse_trains(app_regs.do_toggle);
     gpio_xor_mask(app_regs.do_toggle << DO0_PIN);
     HarpCore::send_harp_reply(WRITE, msg.header.address);
+    send_pulse_train_stop_events(stopped);
 }
 
 void write_do_state(msg_t &msg)
 {
     HarpCore::copy_msg_payload_to_register(msg);
+    uint8_t stopped = stop_pulse_trains(0xFF);
     gpio_put_masked(DO_MASK, app_regs.do_state << DO0_PIN);
     HarpCore::send_harp_reply(WRITE, msg.header.address);
+    send_pulse_train_stop_events(stopped);
 }
 
-int64_t pulse_callback(alarm_id_t id, void *user_data)
+// Read the pins on request, so the state includes running pulse trains.
+void read_do_state(uint8_t address)
 {
-    pulse_train_t *pulse_train = (pulse_train_t *)user_data;
+    app_regs.do_state = (gpio_get_all() & DO_MASK) >> DO0_PIN;
+    HarpCore::read_reg_generic(address);
+}
+
+// Total rate of per-pulse events from running trains, plus a candidate train.
+uint32_t pulse_event_rate_hz(uint8_t event_enable, size_t candidate,
+                             uint32_t candidate_period_us)
+{
+    uint32_t rate_hz = 0;
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        uint32_t period_us = 0;
+        if (i == candidate)
+            period_us = candidate_period_us;
+        else if (pulse_trains[i].alarm > 0)
+            period_us = pulse_trains[i].period_us;
+        if (period_us > 0 && (event_enable & pulse_trains[i].output_mask))
+            rate_hz += 1000000 / period_us;
+    }
+    return rate_hz;
+}
+
+void write_pulse_train(msg_t &msg)
+{
+    // Validate before storing, so a rejected write leaves the register unchanged.
+    size_t index = msg.header.address - PULSE_TRAIN_GP15_ADDRESS;
+    uint32_t payload[3];
+    if (msg.header.payload_length() != sizeof(payload))
+    {
+        HarpCore::write_reg_error(msg);
+        return;
+    }
+    memcpy(payload, msg.payload, sizeof(payload)); // payload may be unaligned
+    uint32_t width_us = payload[0];
+    uint32_t period_us = payload[1];
+    uint32_t count = payload[2];
+    if (width_us > 0 && (period_us < min_pulse_period_us || width_us > period_us ||
+        pulse_event_rate_hz(app_regs.pulse_event_enable, index, period_us) >
+        max_pulse_event_rate_hz))
+    {
+        HarpCore::write_reg_error(msg);
+        return;
+    }
+
+    // Each write supersedes any end of train still queued, see send_queued_event.
+    pulse_train_t *pulse_train = &pulse_trains[index];
+    cancel_pulse_train(pulse_train);
     gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
+    pulse_train->generation++;
+    for (size_t i = 0; i < 3; i++)
+        app_regs.pulse_train[index][i] = payload[i];
 
-    // Emit stop notifications for pulse and pulse train
-    uint64_t harp_time_us = HarpCore::harp_time_us_64();
-    queue_event(HarpCore::APP_REG_START_ADDRESS + 2, pulse_train->output_mask, harp_time_us);
-    if (pulse_train->timer.delay_us == 0)
+    // A width of zero stops the train, keeping the period and count.
+    if (width_us > 0)
     {
-        // Mark timer as cancelled if pulse train stops
-        pulse_train->timer.alarm_id = 0;
-        queue_event(HarpCore::APP_REG_START_ADDRESS + 6, pulse_train->output_mask, harp_time_us);
+        pulse_train->width_us = width_us;
+        pulse_train->period_us = period_us;
+        pulse_train->remaining = count;
+        pulse_train->last_pulse = false;
+        pulse_train->alarm = add_alarm_in_us(0, pulse_train_callback, pulse_train, true);
     }
-    return 0;
-}
-
-bool pulse_train_callback(repeating_timer_t *rt)
-{
-    pulse_train_t *pulse_train = (pulse_train_t *)rt->user_data;
-
-    // Configure the repeating timer delay following the first pulse
-    pulse_train->timer.delay_us = -((int64_t)pulse_train->pulse_period_us);
-
-    // Stop pulse train if positive counter falls to zero;
-    // counters which started zero or negative repeat indefinitely
-    if (pulse_train->pulse_count > 0 && --pulse_train->pulse_count == 0)
-    {
-        pulse_train->timer.delay_us = 0;
-    }
-
-    // For every pulse in the pulse train, arm an alarm matching the pulse width
-    add_alarm_in_us(pulse_train->pulse_width_us, pulse_callback, pulse_train, true);
-
-    gpio_set_mask(pulse_train->output_mask << DO0_PIN);
-    queue_event(HarpCore::APP_REG_START_ADDRESS + 1, pulse_train->output_mask,
-                HarpCore::harp_time_us_64());
-    return pulse_train->timer.delay_us != 0;
-}
-
-void write_start_pulse_train(msg_t& msg)
-{
-    HarpCore::copy_msg_payload_to_register(msg);
-
-    // Configure pulse train parameters
-    uint8_t output_mask = (uint8_t)((app_regs.start_pulse_train[0] & 0xFF));
-    pulse_train_t *pulse_train = &pulse_train_timers[output_mask];
-    pulse_train->output_mask = output_mask;
-    pulse_train->pulse_width_us = app_regs.start_pulse_train[1];
-    pulse_train->pulse_period_us = app_regs.start_pulse_train[2];
-    pulse_train->pulse_count = app_regs.start_pulse_train[3];
-    
-    // Cancel any existing timer
-    if (cancel_repeating_timer(&pulse_train->timer))
-    {
-        app_regs.stop_pulse_train = output_mask;
-        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 6);
-    }
-
-    // Arm repeating timer and immediately arm the first pulse
     HarpCore::send_harp_reply(WRITE, msg.header.address);
-    add_repeating_timer_us(0, pulse_train_callback, pulse_train, &pulse_train->timer);
 }
 
-void write_stop_pulse_train(msg_t& msg)
+void write_pulse_event_enable(msg_t &msg)
 {
+    uint8_t event_enable = *(uint8_t *)msg.payload;
+    if (pulse_event_rate_hz(event_enable, pulse_train_count, 0) > max_pulse_event_rate_hz)
+    {
+        HarpCore::write_reg_error(msg);
+        return;
+    }
     HarpCore::copy_msg_payload_to_register(msg);
-
-    uint8_t output_mask = app_regs.stop_pulse_train;
-    cancel_repeating_timer(&pulse_train_timers[output_mask].timer);
-
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
@@ -203,7 +308,7 @@ bool adc_callback(repeating_timer_t *rt)
         return false;
 
     rt->delay_us = -adc_period_us;
-    
+
     // Mask the values to 12 bits (0xFFF) to ensure only valid ADC bits are used
     adc_queue_item_t item;
     item.timestamp = HarpCore::harp_time_us_64();
@@ -228,16 +333,44 @@ RegSpec app_reg_specs[]
     RegSpec::U8(&app_regs.do_toggle,
         HarpCore::read_reg_generic, write_do_toggle),
     RegSpec::U8(&app_regs.do_state,
-        HarpCore::read_reg_generic, write_do_state),
-    RegSpec::U32Array(&app_regs.start_pulse_train, 4,
-        HarpCore::read_reg_generic, write_start_pulse_train),
-    RegSpec::U8(&app_regs.stop_pulse_train,
-        HarpCore::read_reg_generic, write_stop_pulse_train),
+        read_do_state, write_do_state),
     RegSpec::U16Array(&app_regs.analog_data, 3,
-        HarpCore::read_reg_generic, HarpCore::write_reg_error)
+        HarpCore::read_reg_generic, HarpCore::write_reg_error),
+    RegSpec::U32Array(&app_regs.pulse_train[0], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[1], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[2], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[3], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[4], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[5], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[6], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U32Array(&app_regs.pulse_train[7], 3,
+        HarpCore::read_reg_generic, write_pulse_train),
+    RegSpec::U8(&app_regs.pulse_event_enable,
+        HarpCore::read_reg_generic, write_pulse_event_enable)
 };
 
 const size_t app_reg_count = sizeof(app_reg_specs) / sizeof(RegSpec);
+
+// Stop every pulse train and return the outputs and their registers to defaults.
+void reset_outputs()
+{
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        cancel_pulse_train(&pulse_trains[i]);
+        pulse_trains[i].output_mask = 1 << i;
+        for (size_t j = 0; j < 3; j++)
+            app_regs.pulse_train[i][j] = 0;
+    }
+    gpio_clr_mask(DO_MASK);
+    app_regs.pulse_event_enable = 0xFF;
+}
 
 void app_reset()
 {
@@ -246,14 +379,10 @@ void app_reset()
     app_regs.do_clear = 0;
     app_regs.do_toggle = 0;
     app_regs.do_state = 0;
-    app_regs.start_pulse_train[0] = 0;
-    app_regs.start_pulse_train[1] = 0;
-    app_regs.start_pulse_train[2] = 0;
-    app_regs.start_pulse_train[3] = 0;
-    app_regs.stop_pulse_train = 0;
     app_regs.analog_data[0] = 0;
     app_regs.analog_data[1] = 0;
     app_regs.analog_data[2] = 0;
+    reset_outputs();
 }
 
 void configure_gpio(void)
@@ -272,6 +401,7 @@ void configure_gpio(void)
     gpio_set_irq_enabled(12, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(14, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
+    reset_outputs();
 }
 
 void enable_gpio(bool enabled)
@@ -382,13 +512,23 @@ void disable_adc_events()
     while (queue_try_remove(&adc_queue, nullptr));
 }
 
-void cancel_pulse_timers()
+// Send a queued event. A pulse train register reports the end of its train, unless
+// a newer write has already replaced it.
+void send_queued_event(const event_queue_item_t &event)
 {
-    // Cancel any pulse train timer which might be still running
-    for (size_t i = 0; i < pulse_train_count; i++)
+    if (event.address >= PULSE_TRAIN_GP15_ADDRESS && event.address < PULSE_EVENT_ENABLE_ADDRESS)
     {
-        cancel_repeating_timer(&pulse_train_timers[i].timer);
+        size_t index = event.address - PULSE_TRAIN_GP15_ADDRESS;
+        pulse_train_t *pulse_train = &pulse_trains[index];
+        if (pulse_train->generation != event.value || pulse_train->alarm > 0)
+            return;
+        app_regs.pulse_train[index][0] = 0;
+        HarpCore::send_harp_reply(EVENT, event.address, event.timestamp);
+        return;
     }
+
+    HarpCore::send_harp_reply(EVENT, event.address, &event.value, sizeof(event.value),
+                              reg_type_t::U8, event.timestamp);
 }
 
 void update_app_state()
@@ -406,7 +546,7 @@ void update_app_state()
         // disable events
         enable_gpio(false);
         disable_adc_events();
-        cancel_pulse_timers();
+        reset_outputs();
         events_active = false;
     }
 
@@ -416,7 +556,7 @@ void update_app_state()
         app_regs.analog_data[0] = sample.analog_data[0];
         app_regs.analog_data[1] = sample.analog_data[1];
         app_regs.analog_data[2] = sample.analog_data[2];
-        HarpCore::send_harp_reply(EVENT, HarpCore::APP_REG_START_ADDRESS + 7, sample.timestamp);
+        HarpCore::send_harp_reply(EVENT, ANALOG_DATA_ADDRESS, sample.timestamp);
     }
 
     // Drain queued events even while disabled, so the queue never stays full.
@@ -424,10 +564,7 @@ void update_app_state()
     while (queue_try_remove(&event_queue, &event))
     {
         if (events_active)
-        {
-            HarpCore::send_harp_reply(EVENT, event.address, &event.value, sizeof(event.value),
-                                      reg_type_t::U8, event.timestamp);
-        }
+            send_queued_event(event);
     }
 }
 
@@ -447,7 +584,7 @@ int main()
     app.set_synchronizer(&sync);
     configure_gpio();
     configure_adc();
-    
+
     while(true)
     {
         app.run();
