@@ -27,17 +27,31 @@ __all__ = [
     "DigitalOutputClearPayload",
     "DigitalOutputTogglePayload",
     "DigitalOutputStatePayload",
-    "StartPulseTrainPayload",
-    "StopPulseTrainPayload",
     "AnalogDataPayload",
+    "PulseTrainGP15Payload",
+    "PulseTrainGP16Payload",
+    "PulseTrainGP17Payload",
+    "PulseTrainGP18Payload",
+    "PulseTrainGP19Payload",
+    "PulseTrainGP20Payload",
+    "PulseTrainGP21Payload",
+    "PulseTrainGP22Payload",
+    "PulseEventEnablePayload",
     "DigitalInputState",
     "DigitalOutputSet",
     "DigitalOutputClear",
     "DigitalOutputToggle",
     "DigitalOutputState",
-    "StartPulseTrain",
-    "StopPulseTrain",
     "AnalogData",
+    "PulseTrainGP15",
+    "PulseTrainGP16",
+    "PulseTrainGP17",
+    "PulseTrainGP18",
+    "PulseTrainGP19",
+    "PulseTrainGP20",
+    "PulseTrainGP21",
+    "PulseTrainGP22",
+    "PulseEventEnable",
     "REGISTER_MAP",
 ]
 
@@ -122,32 +136,6 @@ class DigitalOutputStatePayload(AnonymousPayload[np.uint8]):
     __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
 
 
-class StartPulseTrainPayload(StructPayload[np.uint32], length=4):
-    """Represents the StartPulseTrain payload."""
-
-    digital_output: DigitalOutputs = BitMask(enum=DigitalOutputs, mask=0xFF)
-    """Specifies the digital output lines set by each pulse of the pulse train."""
-
-    pulse_width: np.uint32 = Field(
-        IdentityConverter(np.uint32), offset=1, default=np.uint32(500000)
-    )
-    """Specifies the duration in microseconds that each pulse is HIGH."""
-
-    pulse_period: np.uint32 = Field(
-        IdentityConverter(np.uint32), offset=2, default=np.uint32(1000000)
-    )
-    """Specifies the interval in microseconds between each pulse in the pulse train."""
-
-    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=3, default=np.uint32(1))
-    """Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train."""
-
-
-class StopPulseTrainPayload(AnonymousPayload[np.uint8]):
-    """Represents the StopPulseTrain payload."""
-
-    __value__: DigitalOutputs = BitMask(enum=DigitalOutputs)
-
-
 class AnalogDataPayload(StructPayload[np.uint16], length=3):
     """Represents the AnalogData payload."""
 
@@ -161,6 +149,135 @@ class AnalogDataPayload(StructPayload[np.uint16], length=3):
     """The analog value sampled from ADC channel 2."""
 
 
+class PulseTrainGP15Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP15 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP16Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP16 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP17Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP17 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP18Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP18 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP19Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP19 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP20Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP20 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP21Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP21 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseTrainGP22Payload(StructPayload[np.uint32], length=3):
+    """Represents the PulseTrainGP22 payload."""
+
+    pulse_width: np.uint32 = Field(IdentityConverter(np.uint32), default=np.uint32(500000))
+    """Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train."""
+
+    pulse_period: np.uint32 = Field(
+        IdentityConverter(np.uint32), offset=1, default=np.uint32(1000000)
+    )
+    """Specifies the interval in microseconds between the start of each pulse."""
+
+    pulse_count: np.uint32 = Field(IdentityConverter(np.uint32), offset=2, default=np.uint32(1))
+    """Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped."""
+
+
+class PulseEventEnablePayload(AnonymousPayload[np.uint8]):
+    """Represents the PulseEventEnable payload."""
+
+    __value__: DigitalOutputs = BitMask(
+        enum=DigitalOutputs,
+        default=DigitalOutputs.GP15 | DigitalOutputs.GP16 | DigitalOutputs.GP17 | DigitalOutputs.GP18 | DigitalOutputs.GP19 | DigitalOutputs.GP20 | DigitalOutputs.GP21 | DigitalOutputs.GP22,
+    )
+
+
 class DigitalInputState(RegisterBase[DigitalInputs]):
     """Reflects the state of the digital input lines."""
 
@@ -170,7 +287,7 @@ class DigitalInputState(RegisterBase[DigitalInputs]):
 
 
 class DigitalOutputSet(RegisterBase[DigitalOutputs]):
-    """Sets the specified digital output lines."""
+    """Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train."""
 
     address: ClassVar[int] = 33
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -178,7 +295,7 @@ class DigitalOutputSet(RegisterBase[DigitalOutputs]):
 
 
 class DigitalOutputClear(RegisterBase[DigitalOutputs]):
-    """Clears the specified digital output lines."""
+    """Clears the specified output lines. Clearing a line stops its pulse train."""
 
     address: ClassVar[int] = 34
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -186,7 +303,7 @@ class DigitalOutputClear(RegisterBase[DigitalOutputs]):
 
 
 class DigitalOutputToggle(RegisterBase[DigitalOutputs]):
-    """Toggles the specified digital output lines."""
+    """Toggles the specified output lines. Toggling a line stops its pulse train."""
 
     address: ClassVar[int] = 35
     payload_type: ClassVar[PayloadType] = PayloadType.U8
@@ -194,35 +311,91 @@ class DigitalOutputToggle(RegisterBase[DigitalOutputs]):
 
 
 class DigitalOutputState(RegisterBase[DigitalOutputs]):
-    """Writes the state of all digital output lines."""
+    """Writes the state of all output lines. Writing the state stops every pulse train."""
 
     address: ClassVar[int] = 36
     payload_type: ClassVar[PayloadType] = PayloadType.U8
     payload_class = DigitalOutputStatePayload
 
 
-class StartPulseTrain(RegisterBase[StartPulseTrainPayload]):
-    """Starts a pulse train driving the specified digital output lines."""
-
-    address: ClassVar[int] = 37
-    payload_type: ClassVar[PayloadType] = PayloadType.U32
-    payload_class = StartPulseTrainPayload
-
-
-class StopPulseTrain(RegisterBase[DigitalOutputs]):
-    """Stops the pulse train running on the specified digital output lines."""
-
-    address: ClassVar[int] = 38
-    payload_type: ClassVar[PayloadType] = PayloadType.U8
-    payload_class = StopPulseTrainPayload
-
-
 class AnalogData(RegisterBase[AnalogDataPayload]):
     """Reports the sampled analog signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution."""
 
-    address: ClassVar[int] = 39
+    address: ClassVar[int] = 37
     payload_type: ClassVar[PayloadType] = PayloadType.U16
     payload_class = AnalogDataPayload
+
+
+class PulseTrainGP15(RegisterBase[PulseTrainGP15Payload]):
+    """Starts a pulse train on digital output GP15, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 38
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP15Payload
+
+
+class PulseTrainGP16(RegisterBase[PulseTrainGP16Payload]):
+    """Starts a pulse train on digital output GP16, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 39
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP16Payload
+
+
+class PulseTrainGP17(RegisterBase[PulseTrainGP17Payload]):
+    """Starts a pulse train on digital output GP17, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 40
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP17Payload
+
+
+class PulseTrainGP18(RegisterBase[PulseTrainGP18Payload]):
+    """Starts a pulse train on digital output GP18, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 41
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP18Payload
+
+
+class PulseTrainGP19(RegisterBase[PulseTrainGP19Payload]):
+    """Starts a pulse train on digital output GP19, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 42
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP19Payload
+
+
+class PulseTrainGP20(RegisterBase[PulseTrainGP20Payload]):
+    """Starts a pulse train on digital output GP20, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 43
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP20Payload
+
+
+class PulseTrainGP21(RegisterBase[PulseTrainGP21Payload]):
+    """Starts a pulse train on digital output GP21, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 44
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP21Payload
+
+
+class PulseTrainGP22(RegisterBase[PulseTrainGP22Payload]):
+    """Starts a pulse train on digital output GP22, or stops it if the pulse width is zero."""
+
+    address: ClassVar[int] = 45
+    payload_type: ClassVar[PayloadType] = PayloadType.U32
+    payload_class = PulseTrainGP22Payload
+
+
+class PulseEventEnable(RegisterBase[DigitalOutputs]):
+    """Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet."""
+
+    address: ClassVar[int] = 46
+    payload_type: ClassVar[PayloadType] = PayloadType.U8
+    payload_class = PulseEventEnablePayload
 
 
 REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
@@ -232,7 +405,14 @@ REGISTER_MAP: dict[int, type[RegisterBase[Any]]] = {
     34: DigitalOutputClear,
     35: DigitalOutputToggle,
     36: DigitalOutputState,
-    37: StartPulseTrain,
-    38: StopPulseTrain,
-    39: AnalogData,
+    37: AnalogData,
+    38: PulseTrainGP15,
+    39: PulseTrainGP16,
+    40: PulseTrainGP17,
+    41: PulseTrainGP18,
+    42: PulseTrainGP19,
+    43: PulseTrainGP20,
+    44: PulseTrainGP21,
+    45: PulseTrainGP22,
+    46: PulseEventEnable,
 }
