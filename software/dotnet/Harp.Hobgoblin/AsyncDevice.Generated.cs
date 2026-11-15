@@ -412,146 +412,6 @@ namespace Harp.Hobgoblin
         }
 
         /// <summary>
-        /// Asynchronously reads the payload of the <see cref="StartPulseTrain"/> register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The value of its
-        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
-        /// </returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the read request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task<StartPulseTrainPayload> ReadStartPulseTrainAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPulseTrain.Address), cancellationToken);
-            return StartPulseTrain.GetPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously reads the timestamped payload of the <see cref="StartPulseTrain"/> register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The value of its
-        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
-        /// </returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the read request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task<Timestamped<StartPulseTrainPayload>> ReadTimestampedStartPulseTrainAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadUInt32(StartPulseTrain.Address), cancellationToken);
-            return StartPulseTrain.GetTimestampedPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously writes the specified payload to the <see cref="StartPulseTrain"/> register.
-        /// </summary>
-        /// <param name="value">The payload to write to the register.</param>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>A task that represents the asynchronous write operation.</returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the write request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task WriteStartPulseTrainAsync(StartPulseTrainPayload value, CancellationToken cancellationToken = default)
-        {
-            var request = StartPulseTrain.FromPayload(MessageType.Write, value);
-            await CommandAsync(request, cancellationToken);
-        }
-
-        /// <summary>
-        /// Asynchronously reads the payload of the <see cref="StopPulseTrain"/> register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The value of its
-        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
-        /// </returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the read request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task<DigitalOutputs> ReadStopPulseTrainAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadByte(StopPulseTrain.Address), cancellationToken);
-            return StopPulseTrain.GetPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously reads the timestamped payload of the <see cref="StopPulseTrain"/> register.
-        /// </summary>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous read operation. The value of its
-        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
-        /// </returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the read request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task<Timestamped<DigitalOutputs>> ReadTimestampedStopPulseTrainAsync(CancellationToken cancellationToken = default)
-        {
-            var reply = await CommandAsync(HarpCommand.ReadByte(StopPulseTrain.Address), cancellationToken);
-            return StopPulseTrain.GetTimestampedPayload(reply);
-        }
-
-        /// <summary>
-        /// Asynchronously writes the specified payload to the <see cref="StopPulseTrain"/> register.
-        /// </summary>
-        /// <param name="value">The payload to write to the register.</param>
-        /// <param name="cancellationToken">
-        /// The token to monitor for cancellation requests. The default value is
-        /// <see cref="CancellationToken.None"/>.
-        /// </param>
-        /// <returns>A task that represents the asynchronous write operation.</returns>
-        /// <exception cref="HarpException">
-        /// The device replied to the write request with an error. This exception is stored into
-        /// the returned task.
-        /// </exception>
-        /// <exception cref="System.OperationCanceledException">
-        /// The cancellation token was canceled. This exception is stored into the returned task.
-        /// </exception>
-        public async Task WriteStopPulseTrainAsync(DigitalOutputs value, CancellationToken cancellationToken = default)
-        {
-            var request = StopPulseTrain.FromPayload(MessageType.Write, value);
-            await CommandAsync(request, cancellationToken);
-        }
-
-        /// <summary>
         /// Asynchronously reads the payload of the <see cref="AnalogData"/> register.
         /// </summary>
         /// <param name="cancellationToken">
@@ -597,6 +457,636 @@ namespace Harp.Hobgoblin
         {
             var reply = await CommandAsync(HarpCommand.ReadUInt16(AnalogData.Address), cancellationToken);
             return AnalogData.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP15"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP15Payload> ReadPulseTrainGP15Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP15.Address), cancellationToken);
+            return PulseTrainGP15.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP15"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP15Payload>> ReadTimestampedPulseTrainGP15Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP15.Address), cancellationToken);
+            return PulseTrainGP15.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP15"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP15Async(PulseTrainGP15Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP15.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP16"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP16Payload> ReadPulseTrainGP16Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP16.Address), cancellationToken);
+            return PulseTrainGP16.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP16"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP16Payload>> ReadTimestampedPulseTrainGP16Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP16.Address), cancellationToken);
+            return PulseTrainGP16.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP16"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP16Async(PulseTrainGP16Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP16.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP17"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP17Payload> ReadPulseTrainGP17Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP17.Address), cancellationToken);
+            return PulseTrainGP17.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP17"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP17Payload>> ReadTimestampedPulseTrainGP17Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP17.Address), cancellationToken);
+            return PulseTrainGP17.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP17"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP17Async(PulseTrainGP17Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP17.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP18"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP18Payload> ReadPulseTrainGP18Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP18.Address), cancellationToken);
+            return PulseTrainGP18.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP18"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP18Payload>> ReadTimestampedPulseTrainGP18Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP18.Address), cancellationToken);
+            return PulseTrainGP18.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP18"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP18Async(PulseTrainGP18Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP18.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP19"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP19Payload> ReadPulseTrainGP19Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP19.Address), cancellationToken);
+            return PulseTrainGP19.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP19"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP19Payload>> ReadTimestampedPulseTrainGP19Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP19.Address), cancellationToken);
+            return PulseTrainGP19.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP19"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP19Async(PulseTrainGP19Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP19.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP20"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP20Payload> ReadPulseTrainGP20Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP20.Address), cancellationToken);
+            return PulseTrainGP20.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP20"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP20Payload>> ReadTimestampedPulseTrainGP20Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP20.Address), cancellationToken);
+            return PulseTrainGP20.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP20"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP20Async(PulseTrainGP20Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP20.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP21"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP21Payload> ReadPulseTrainGP21Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP21.Address), cancellationToken);
+            return PulseTrainGP21.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP21"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP21Payload>> ReadTimestampedPulseTrainGP21Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP21.Address), cancellationToken);
+            return PulseTrainGP21.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP21"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP21Async(PulseTrainGP21Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP21.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseTrainGP22"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<PulseTrainGP22Payload> ReadPulseTrainGP22Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP22.Address), cancellationToken);
+            return PulseTrainGP22.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseTrainGP22"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<PulseTrainGP22Payload>> ReadTimestampedPulseTrainGP22Async(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadUInt32(PulseTrainGP22.Address), cancellationToken);
+            return PulseTrainGP22.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseTrainGP22"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseTrainGP22Async(PulseTrainGP22Payload value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseTrainGP22.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the payload of the <see cref="PulseEventEnable"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<DigitalOutputs> ReadPulseEventEnableAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PulseEventEnable.Address), cancellationToken);
+            return PulseEventEnable.GetPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the timestamped payload of the <see cref="PulseEventEnable"/> register.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>
+        /// A task that represents the asynchronous read operation. The value of its
+        /// <see cref="Task{TResult}.Result"/> property contains the timestamped register payload.
+        /// </returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the read request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task<Timestamped<DigitalOutputs>> ReadTimestampedPulseEventEnableAsync(CancellationToken cancellationToken = default)
+        {
+            var reply = await CommandAsync(HarpCommand.ReadByte(PulseEventEnable.Address), cancellationToken);
+            return PulseEventEnable.GetTimestampedPayload(reply);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified payload to the <see cref="PulseEventEnable"/> register.
+        /// </summary>
+        /// <param name="value">The payload to write to the register.</param>
+        /// <param name="cancellationToken">
+        /// The token to monitor for cancellation requests. The default value is
+        /// <see cref="CancellationToken.None"/>.
+        /// </param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="HarpException">
+        /// The device replied to the write request with an error. This exception is stored into
+        /// the returned task.
+        /// </exception>
+        /// <exception cref="System.OperationCanceledException">
+        /// The cancellation token was canceled. This exception is stored into the returned task.
+        /// </exception>
+        public async Task WritePulseEventEnableAsync(DigitalOutputs value, CancellationToken cancellationToken = default)
+        {
+            var request = PulseEventEnable.FromPayload(MessageType.Write, value);
+            await CommandAsync(request, cancellationToken);
         }
     }
 }

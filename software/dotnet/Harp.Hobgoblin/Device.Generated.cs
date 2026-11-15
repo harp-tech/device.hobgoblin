@@ -49,9 +49,16 @@ namespace Harp.Hobgoblin
             { 34, typeof(DigitalOutputClear) },
             { 35, typeof(DigitalOutputToggle) },
             { 36, typeof(DigitalOutputState) },
-            { 37, typeof(StartPulseTrain) },
-            { 38, typeof(StopPulseTrain) },
-            { 39, typeof(AnalogData) }
+            { 37, typeof(AnalogData) },
+            { 38, typeof(PulseTrainGP15) },
+            { 39, typeof(PulseTrainGP16) },
+            { 40, typeof(PulseTrainGP17) },
+            { 41, typeof(PulseTrainGP18) },
+            { 42, typeof(PulseTrainGP19) },
+            { 43, typeof(PulseTrainGP20) },
+            { 44, typeof(PulseTrainGP21) },
+            { 45, typeof(PulseTrainGP22) },
+            { 46, typeof(PulseEventEnable) }
         };
 
         /// <summary>
@@ -309,17 +316,31 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputClear"/>
     /// <seealso cref="DigitalOutputToggle"/>
     /// <seealso cref="DigitalOutputState"/>
-    /// <seealso cref="StartPulseTrain"/>
-    /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="PulseTrainGP15"/>
+    /// <seealso cref="PulseTrainGP16"/>
+    /// <seealso cref="PulseTrainGP17"/>
+    /// <seealso cref="PulseTrainGP18"/>
+    /// <seealso cref="PulseTrainGP19"/>
+    /// <seealso cref="PulseTrainGP20"/>
+    /// <seealso cref="PulseTrainGP21"/>
+    /// <seealso cref="PulseTrainGP22"/>
+    /// <seealso cref="PulseEventEnable"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
     [XmlInclude(typeof(DigitalOutputToggle))]
     [XmlInclude(typeof(DigitalOutputState))]
-    [XmlInclude(typeof(StartPulseTrain))]
-    [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(PulseTrainGP15))]
+    [XmlInclude(typeof(PulseTrainGP16))]
+    [XmlInclude(typeof(PulseTrainGP17))]
+    [XmlInclude(typeof(PulseTrainGP18))]
+    [XmlInclude(typeof(PulseTrainGP19))]
+    [XmlInclude(typeof(PulseTrainGP20))]
+    [XmlInclude(typeof(PulseTrainGP21))]
+    [XmlInclude(typeof(PulseTrainGP22))]
+    [XmlInclude(typeof(PulseEventEnable))]
     [Description("Filters register-specific messages reported by the Hobgoblin device.")]
     public class FilterRegister : FilterRegisterBuilder, INamedElement, ICustomTypeDescriptor
     {
@@ -346,25 +367,46 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputClear"/>
     /// <seealso cref="DigitalOutputToggle"/>
     /// <seealso cref="DigitalOutputState"/>
-    /// <seealso cref="StartPulseTrain"/>
-    /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="PulseTrainGP15"/>
+    /// <seealso cref="PulseTrainGP16"/>
+    /// <seealso cref="PulseTrainGP17"/>
+    /// <seealso cref="PulseTrainGP18"/>
+    /// <seealso cref="PulseTrainGP19"/>
+    /// <seealso cref="PulseTrainGP20"/>
+    /// <seealso cref="PulseTrainGP21"/>
+    /// <seealso cref="PulseTrainGP22"/>
+    /// <seealso cref="PulseEventEnable"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
     [XmlInclude(typeof(DigitalOutputToggle))]
     [XmlInclude(typeof(DigitalOutputState))]
-    [XmlInclude(typeof(StartPulseTrain))]
-    [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(PulseTrainGP15))]
+    [XmlInclude(typeof(PulseTrainGP16))]
+    [XmlInclude(typeof(PulseTrainGP17))]
+    [XmlInclude(typeof(PulseTrainGP18))]
+    [XmlInclude(typeof(PulseTrainGP19))]
+    [XmlInclude(typeof(PulseTrainGP20))]
+    [XmlInclude(typeof(PulseTrainGP21))]
+    [XmlInclude(typeof(PulseTrainGP22))]
+    [XmlInclude(typeof(PulseEventEnable))]
     [XmlInclude(typeof(TimestampedDigitalInputState))]
     [XmlInclude(typeof(TimestampedDigitalOutputSet))]
     [XmlInclude(typeof(TimestampedDigitalOutputClear))]
     [XmlInclude(typeof(TimestampedDigitalOutputToggle))]
     [XmlInclude(typeof(TimestampedDigitalOutputState))]
-    [XmlInclude(typeof(TimestampedStartPulseTrain))]
-    [XmlInclude(typeof(TimestampedStopPulseTrain))]
     [XmlInclude(typeof(TimestampedAnalogData))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP15))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP16))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP17))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP18))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP19))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP20))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP21))]
+    [XmlInclude(typeof(TimestampedPulseTrainGP22))]
+    [XmlInclude(typeof(TimestampedPulseEventEnable))]
     [Description("Filters and selects specific messages reported by the Hobgoblin device.")]
     public partial class Parse : ParseBuilder, INamedElement, ICustomTypeDescriptor
     {
@@ -393,17 +435,31 @@ namespace Harp.Hobgoblin
     /// <seealso cref="DigitalOutputClear"/>
     /// <seealso cref="DigitalOutputToggle"/>
     /// <seealso cref="DigitalOutputState"/>
-    /// <seealso cref="StartPulseTrain"/>
-    /// <seealso cref="StopPulseTrain"/>
     /// <seealso cref="AnalogData"/>
+    /// <seealso cref="PulseTrainGP15"/>
+    /// <seealso cref="PulseTrainGP16"/>
+    /// <seealso cref="PulseTrainGP17"/>
+    /// <seealso cref="PulseTrainGP18"/>
+    /// <seealso cref="PulseTrainGP19"/>
+    /// <seealso cref="PulseTrainGP20"/>
+    /// <seealso cref="PulseTrainGP21"/>
+    /// <seealso cref="PulseTrainGP22"/>
+    /// <seealso cref="PulseEventEnable"/>
     [XmlInclude(typeof(DigitalInputState))]
     [XmlInclude(typeof(DigitalOutputSet))]
     [XmlInclude(typeof(DigitalOutputClear))]
     [XmlInclude(typeof(DigitalOutputToggle))]
     [XmlInclude(typeof(DigitalOutputState))]
-    [XmlInclude(typeof(StartPulseTrain))]
-    [XmlInclude(typeof(StopPulseTrain))]
     [XmlInclude(typeof(AnalogData))]
+    [XmlInclude(typeof(PulseTrainGP15))]
+    [XmlInclude(typeof(PulseTrainGP16))]
+    [XmlInclude(typeof(PulseTrainGP17))]
+    [XmlInclude(typeof(PulseTrainGP18))]
+    [XmlInclude(typeof(PulseTrainGP19))]
+    [XmlInclude(typeof(PulseTrainGP20))]
+    [XmlInclude(typeof(PulseTrainGP21))]
+    [XmlInclude(typeof(PulseTrainGP22))]
+    [XmlInclude(typeof(PulseEventEnable))]
     [Description("Formats a sequence of values as specific Hobgoblin register messages.")]
     public partial class Format : FormatBuilder, INamedElement, ICustomTypeDescriptor
     {
@@ -522,10 +578,10 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Provides methods for manipulating DigitalOutputSet register messages. Sets the specified digital
-    /// output lines.
+    /// Provides methods for manipulating DigitalOutputSet register messages. Sets the specified output
+    /// lines and reports each pulse start. Setting a line stops its pulse train.
     /// </summary>
-    [Description("Sets the specified digital output lines.")]
+    [Description("Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.")]
     public partial class DigitalOutputSet
     {
         /// <summary>
@@ -597,10 +653,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods that return the timestamped payload of DigitalOutputSet register messages. Sets
-    /// the specified digital output lines.
+    /// the specified output lines and reports each pulse start. Setting a line stops its pulse train.
     /// </summary>
     /// <seealso cref="DigitalOutputSet"/>
-    [Description("Sets the specified digital output lines.")]
+    [Description("Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.")]
     public partial class TimestampedDigitalOutputSet : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputSet);
@@ -623,9 +679,9 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods for manipulating DigitalOutputClear register messages. Clears the specified
-    /// digital output lines.
+    /// output lines. Clearing a line stops its pulse train.
     /// </summary>
-    [Description("Clears the specified digital output lines.")]
+    [Description("Clears the specified output lines. Clearing a line stops its pulse train.")]
     public partial class DigitalOutputClear
     {
         /// <summary>
@@ -697,10 +753,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods that return the timestamped payload of DigitalOutputClear register messages.
-    /// Clears the specified digital output lines.
+    /// Clears the specified output lines. Clearing a line stops its pulse train.
     /// </summary>
     /// <seealso cref="DigitalOutputClear"/>
-    [Description("Clears the specified digital output lines.")]
+    [Description("Clears the specified output lines. Clearing a line stops its pulse train.")]
     public partial class TimestampedDigitalOutputClear : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputClear);
@@ -723,9 +779,9 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods for manipulating DigitalOutputToggle register messages. Toggles the specified
-    /// digital output lines.
+    /// output lines. Toggling a line stops its pulse train.
     /// </summary>
-    [Description("Toggles the specified digital output lines.")]
+    [Description("Toggles the specified output lines. Toggling a line stops its pulse train.")]
     public partial class DigitalOutputToggle
     {
         /// <summary>
@@ -797,10 +853,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods that return the timestamped payload of DigitalOutputToggle register messages.
-    /// Toggles the specified digital output lines.
+    /// Toggles the specified output lines. Toggling a line stops its pulse train.
     /// </summary>
     /// <seealso cref="DigitalOutputToggle"/>
-    [Description("Toggles the specified digital output lines.")]
+    [Description("Toggles the specified output lines. Toggling a line stops its pulse train.")]
     public partial class TimestampedDigitalOutputToggle : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputToggle);
@@ -823,9 +879,9 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods for manipulating DigitalOutputState register messages. Writes the state of all
-    /// digital output lines.
+    /// output lines. Writing the state stops every pulse train.
     /// </summary>
-    [Description("Writes the state of all digital output lines.")]
+    [Description("Writes the state of all output lines. Writing the state stops every pulse train.")]
     public partial class DigitalOutputState
     {
         /// <summary>
@@ -897,10 +953,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Provides methods that return the timestamped payload of DigitalOutputState register messages.
-    /// Writes the state of all digital output lines.
+    /// Writes the state of all output lines. Writing the state stops every pulse train.
     /// </summary>
     /// <seealso cref="DigitalOutputState"/>
-    [Description("Writes the state of all digital output lines.")]
+    [Description("Writes the state of all output lines. Writing the state stops every pulse train.")]
     public partial class TimestampedDigitalOutputState : ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputState);
@@ -922,227 +978,6 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Provides methods for manipulating StartPulseTrain register messages. Starts a pulse train
-    /// driving the specified digital output lines.
-    /// </summary>
-    [Description("Starts a pulse train driving the specified digital output lines.")]
-    public partial class StartPulseTrain
-    {
-        /// <summary>
-        /// Represents the address of the <see cref="StartPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int Address = 37;
-
-        /// <summary>
-        /// Represents the payload type of the <see cref="StartPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const PayloadType RegisterType = PayloadType.U32;
-
-        /// <summary>
-        /// Represents the length of the <see cref="StartPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int RegisterLength = 4;
-
-        static StartPulseTrainPayload ParsePayload(uint[] payload)
-        {
-            StartPulseTrainPayload result;
-            result.DigitalOutput = (DigitalOutputs)(uint)(payload[0] & 0xFF);
-            result.PulseWidth = payload[1];
-            result.PulsePeriod = payload[2];
-            result.PulseCount = payload[3];
-            return result;
-        }
-
-        static uint[] FormatPayload(StartPulseTrainPayload value)
-        {
-            uint[] result;
-            result = new uint[4];
-            result[0] = (uint)((uint)value.DigitalOutput & 0xFF);
-            result[1] = value.PulseWidth;
-            result[2] = value.PulsePeriod;
-            result[3] = value.PulseCount;
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the payload of the specified <see cref="StartPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the message payload.</returns>
-        public static StartPulseTrainPayload GetPayload(HarpMessage message)
-        {
-            return ParsePayload(message.GetPayloadArray<uint>());
-        }
-
-        /// <summary>
-        /// Returns the timestamped payload of the specified <see cref="StartPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<StartPulseTrainPayload> GetTimestampedPayload(HarpMessage message)
-        {
-            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
-            return Timestamped.Create(ParsePayload(payload), timestamp);
-        }
-
-        /// <summary>
-        /// Returns a Harp message for the <see cref="StartPulseTrain"/> register.
-        /// </summary>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The payload of the message.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StartPulseTrain"/> register
-        /// with the specified message type and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, StartPulseTrainPayload value)
-        {
-            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
-        }
-
-        /// <summary>
-        /// Returns a timestamped Harp message for the <see cref="StartPulseTrain"/>
-        /// register.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The payload of the message.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StartPulseTrain"/> register
-        /// with the specified message type, timestamp, and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, StartPulseTrainPayload value)
-        {
-            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
-        }
-    }
-
-    /// <summary>
-    /// Provides methods that return the timestamped payload of StartPulseTrain register messages.
-    /// Starts a pulse train driving the specified digital output lines.
-    /// </summary>
-    /// <seealso cref="StartPulseTrain"/>
-    [Description("Starts a pulse train driving the specified digital output lines.")]
-    public partial class TimestampedStartPulseTrain : ITimestampedRegister
-    {
-        Type ITimestampedRegister.RegisterType => typeof(StartPulseTrain);
-
-        /// <summary>
-        /// Represents the address of the <see cref="StartPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int Address = StartPulseTrain.Address;
-
-        /// <summary>
-        /// Returns the timestamped payload of the specified <see cref="StartPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<StartPulseTrainPayload> GetPayload(HarpMessage message)
-        {
-            return StartPulseTrain.GetTimestampedPayload(message);
-        }
-    }
-
-    /// <summary>
-    /// Provides methods for manipulating StopPulseTrain register messages. Stops the pulse train
-    /// running on the specified digital output lines.
-    /// </summary>
-    [Description("Stops the pulse train running on the specified digital output lines.")]
-    public partial class StopPulseTrain
-    {
-        /// <summary>
-        /// Represents the address of the <see cref="StopPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int Address = 38;
-
-        /// <summary>
-        /// Represents the payload type of the <see cref="StopPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const PayloadType RegisterType = PayloadType.U8;
-
-        /// <summary>
-        /// Represents the length of the <see cref="StopPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int RegisterLength = 1;
-
-        /// <summary>
-        /// Returns the payload of the specified <see cref="StopPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the message payload.</returns>
-        public static DigitalOutputs GetPayload(HarpMessage message)
-        {
-            return (DigitalOutputs)message.GetPayloadByte();
-        }
-
-        /// <summary>
-        /// Returns the timestamped payload of the specified <see cref="StopPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<DigitalOutputs> GetTimestampedPayload(HarpMessage message)
-        {
-            var (payload, timestamp) = message.GetTimestampedPayloadByte();
-            return Timestamped.Create((DigitalOutputs)payload, timestamp);
-        }
-
-        /// <summary>
-        /// Returns a Harp message for the <see cref="StopPulseTrain"/> register.
-        /// </summary>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The payload of the message.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StopPulseTrain"/> register
-        /// with the specified message type and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(MessageType messageType, DigitalOutputs value)
-        {
-            return HarpMessage.FromByte(Address, messageType, (byte)value);
-        }
-
-        /// <summary>
-        /// Returns a timestamped Harp message for the <see cref="StopPulseTrain"/>
-        /// register.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
-        /// <param name="messageType">The type of the Harp message.</param>
-        /// <param name="value">The payload of the message.</param>
-        /// <returns>
-        /// A <see cref="HarpMessage"/> object for the <see cref="StopPulseTrain"/> register
-        /// with the specified message type, timestamp, and payload.
-        /// </returns>
-        public static HarpMessage FromPayload(double timestamp, MessageType messageType, DigitalOutputs value)
-        {
-            return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
-        }
-    }
-
-    /// <summary>
-    /// Provides methods that return the timestamped payload of StopPulseTrain register messages. Stops
-    /// the pulse train running on the specified digital output lines.
-    /// </summary>
-    /// <seealso cref="StopPulseTrain"/>
-    [Description("Stops the pulse train running on the specified digital output lines.")]
-    public partial class TimestampedStopPulseTrain : ITimestampedRegister
-    {
-        Type ITimestampedRegister.RegisterType => typeof(StopPulseTrain);
-
-        /// <summary>
-        /// Represents the address of the <see cref="StopPulseTrain"/> register. This field is constant.
-        /// </summary>
-        public const int Address = StopPulseTrain.Address;
-
-        /// <summary>
-        /// Returns the timestamped payload of the specified <see cref="StopPulseTrain"/> register message.
-        /// </summary>
-        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
-        /// <returns>A value representing the timestamped message payload.</returns>
-        public static Timestamped<DigitalOutputs> GetPayload(HarpMessage message)
-        {
-            return StopPulseTrain.GetTimestampedPayload(message);
-        }
-    }
-
-    /// <summary>
     /// Provides methods for manipulating AnalogData register messages. Reports the sampled analog
     /// signal on each of the ADC input channels. The ADC is capped at 12 bits of resolution.
     /// </summary>
@@ -1152,7 +987,7 @@ namespace Harp.Hobgoblin
         /// <summary>
         /// Represents the address of the <see cref="AnalogData"/> register. This field is constant.
         /// </summary>
-        public const int Address = 39;
+        public const int Address = 37;
 
         /// <summary>
         /// Represents the payload type of the <see cref="AnalogData"/> register. This field is constant.
@@ -1263,6 +1098,1059 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
+    /// Provides methods for manipulating PulseTrainGP15 register messages. Starts a pulse train on
+    /// digital output GP15, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP15, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP15
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP15"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 38;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP15"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP15"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP15Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP15Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP15Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP15"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP15Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP15"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP15Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP15"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP15"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP15Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP15"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP15"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP15Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP15 register messages. Starts
+    /// a pulse train on digital output GP15, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP15"/>
+    [Description("Starts a pulse train on digital output GP15, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP15 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP15);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP15"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP15.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP15"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP15Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP15.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP16 register messages. Starts a pulse train on
+    /// digital output GP16, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP16, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP16
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP16"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 39;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP16"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP16"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP16Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP16Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP16Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP16"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP16Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP16"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP16Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP16"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP16"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP16Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP16"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP16"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP16Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP16 register messages. Starts
+    /// a pulse train on digital output GP16, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP16"/>
+    [Description("Starts a pulse train on digital output GP16, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP16 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP16);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP16"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP16.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP16"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP16Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP16.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP17 register messages. Starts a pulse train on
+    /// digital output GP17, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP17, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP17
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP17"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 40;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP17"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP17"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP17Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP17Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP17Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP17"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP17Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP17"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP17Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP17"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP17"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP17Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP17"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP17"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP17Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP17 register messages. Starts
+    /// a pulse train on digital output GP17, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP17"/>
+    [Description("Starts a pulse train on digital output GP17, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP17 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP17);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP17"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP17.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP17"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP17Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP17.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP18 register messages. Starts a pulse train on
+    /// digital output GP18, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP18, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP18
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP18"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 41;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP18"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP18"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP18Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP18Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP18Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP18"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP18Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP18"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP18Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP18"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP18"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP18Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP18"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP18"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP18Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP18 register messages. Starts
+    /// a pulse train on digital output GP18, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP18"/>
+    [Description("Starts a pulse train on digital output GP18, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP18 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP18);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP18"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP18.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP18"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP18Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP18.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP19 register messages. Starts a pulse train on
+    /// digital output GP19, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP19, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP19
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP19"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 42;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP19"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP19"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP19Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP19Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP19Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP19"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP19Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP19"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP19Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP19"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP19"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP19Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP19"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP19"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP19Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP19 register messages. Starts
+    /// a pulse train on digital output GP19, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP19"/>
+    [Description("Starts a pulse train on digital output GP19, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP19 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP19);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP19"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP19.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP19"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP19Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP19.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP20 register messages. Starts a pulse train on
+    /// digital output GP20, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP20, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP20
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP20"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 43;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP20"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP20"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP20Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP20Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP20Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP20"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP20Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP20"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP20Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP20"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP20"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP20Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP20"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP20"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP20Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP20 register messages. Starts
+    /// a pulse train on digital output GP20, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP20"/>
+    [Description("Starts a pulse train on digital output GP20, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP20 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP20);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP20"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP20.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP20"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP20Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP20.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP21 register messages. Starts a pulse train on
+    /// digital output GP21, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP21, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP21
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP21"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 44;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP21"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP21"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP21Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP21Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP21Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP21"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP21Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP21"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP21Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP21"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP21"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP21Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP21"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP21"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP21Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP21 register messages. Starts
+    /// a pulse train on digital output GP21, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP21"/>
+    [Description("Starts a pulse train on digital output GP21, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP21 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP21);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP21"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP21.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP21"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP21Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP21.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseTrainGP22 register messages. Starts a pulse train on
+    /// digital output GP22, or stops it if the pulse width is zero.
+    /// </summary>
+    [Description("Starts a pulse train on digital output GP22, or stops it if the pulse width is zero.")]
+    public partial class PulseTrainGP22
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP22"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 45;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseTrainGP22"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U32;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseTrainGP22"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 3;
+
+        static PulseTrainGP22Payload ParsePayload(uint[] payload)
+        {
+            PulseTrainGP22Payload result;
+            result.PulseWidth = payload[0];
+            result.PulsePeriod = payload[1];
+            result.PulseCount = payload[2];
+            return result;
+        }
+
+        static uint[] FormatPayload(PulseTrainGP22Payload value)
+        {
+            uint[] result;
+            result = new uint[3];
+            result[0] = value.PulseWidth;
+            result[1] = value.PulsePeriod;
+            result[2] = value.PulseCount;
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseTrainGP22"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static PulseTrainGP22Payload GetPayload(HarpMessage message)
+        {
+            return ParsePayload(message.GetPayloadArray<uint>());
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP22"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP22Payload> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadArray<uint>();
+            return Timestamped.Create(ParsePayload(payload), timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseTrainGP22"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP22"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, PulseTrainGP22Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, messageType, FormatPayload(value));
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseTrainGP22"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseTrainGP22"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, PulseTrainGP22Payload value)
+        {
+            return HarpMessage.FromUInt32(Address, timestamp, messageType, FormatPayload(value));
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseTrainGP22 register messages. Starts
+    /// a pulse train on digital output GP22, or stops it if the pulse width is zero.
+    /// </summary>
+    /// <seealso cref="PulseTrainGP22"/>
+    [Description("Starts a pulse train on digital output GP22, or stops it if the pulse width is zero.")]
+    public partial class TimestampedPulseTrainGP22 : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP22);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseTrainGP22"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseTrainGP22.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseTrainGP22"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<PulseTrainGP22Payload> GetPayload(HarpMessage message)
+        {
+            return PulseTrainGP22.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods for manipulating PulseEventEnable register messages. Specifies the digital
+    /// output lines whose pulse trains report the start of each pulse on DigitalOutputSet.
+    /// </summary>
+    [Description("Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.")]
+    public partial class PulseEventEnable
+    {
+        /// <summary>
+        /// Represents the address of the <see cref="PulseEventEnable"/> register. This field is constant.
+        /// </summary>
+        public const int Address = 46;
+
+        /// <summary>
+        /// Represents the payload type of the <see cref="PulseEventEnable"/> register. This field is constant.
+        /// </summary>
+        public const PayloadType RegisterType = PayloadType.U8;
+
+        /// <summary>
+        /// Represents the length of the <see cref="PulseEventEnable"/> register. This field is constant.
+        /// </summary>
+        public const int RegisterLength = 1;
+
+        /// <summary>
+        /// Returns the payload of the specified <see cref="PulseEventEnable"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the message payload.</returns>
+        public static DigitalOutputs GetPayload(HarpMessage message)
+        {
+            return (DigitalOutputs)message.GetPayloadByte();
+        }
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseEventEnable"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<DigitalOutputs> GetTimestampedPayload(HarpMessage message)
+        {
+            var (payload, timestamp) = message.GetTimestampedPayloadByte();
+            return Timestamped.Create((DigitalOutputs)payload, timestamp);
+        }
+
+        /// <summary>
+        /// Returns a Harp message for the <see cref="PulseEventEnable"/> register.
+        /// </summary>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseEventEnable"/> register
+        /// with the specified message type and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(MessageType messageType, DigitalOutputs value)
+        {
+            return HarpMessage.FromByte(Address, messageType, (byte)value);
+        }
+
+        /// <summary>
+        /// Returns a timestamped Harp message for the <see cref="PulseEventEnable"/>
+        /// register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">The type of the Harp message.</param>
+        /// <param name="value">The payload of the message.</param>
+        /// <returns>
+        /// A <see cref="HarpMessage"/> object for the <see cref="PulseEventEnable"/> register
+        /// with the specified message type, timestamp, and payload.
+        /// </returns>
+        public static HarpMessage FromPayload(double timestamp, MessageType messageType, DigitalOutputs value)
+        {
+            return HarpMessage.FromByte(Address, timestamp, messageType, (byte)value);
+        }
+    }
+
+    /// <summary>
+    /// Provides methods that return the timestamped payload of PulseEventEnable register messages.
+    /// Specifies the digital output lines whose pulse trains report the start of each pulse on
+    /// DigitalOutputSet.
+    /// </summary>
+    /// <seealso cref="PulseEventEnable"/>
+    [Description("Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.")]
+    public partial class TimestampedPulseEventEnable : ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseEventEnable);
+
+        /// <summary>
+        /// Represents the address of the <see cref="PulseEventEnable"/> register. This field is constant.
+        /// </summary>
+        public const int Address = PulseEventEnable.Address;
+
+        /// <summary>
+        /// Returns the timestamped payload of the specified <see cref="PulseEventEnable"/> register message.
+        /// </summary>
+        /// <param name="message">A <see cref="HarpMessage"/> object representing the register message.</param>
+        /// <returns>A value representing the timestamped message payload.</returns>
+        public static Timestamped<DigitalOutputs> GetPayload(HarpMessage message)
+        {
+            return PulseEventEnable.GetTimestampedPayload(message);
+        }
+    }
+
+    /// <summary>
     /// Represents an operator that creates standard messages for the
     /// Hobgoblin device.
     /// </summary>
@@ -1271,25 +2159,46 @@ namespace Harp.Hobgoblin
     /// <seealso cref="CreateDigitalOutputClearPayload"/>
     /// <seealso cref="CreateDigitalOutputTogglePayload"/>
     /// <seealso cref="CreateDigitalOutputStatePayload"/>
-    /// <seealso cref="CreateStartPulseTrainPayload"/>
-    /// <seealso cref="CreateStopPulseTrainPayload"/>
     /// <seealso cref="CreateAnalogDataPayload"/>
+    /// <seealso cref="CreatePulseTrainGP15Payload"/>
+    /// <seealso cref="CreatePulseTrainGP16Payload"/>
+    /// <seealso cref="CreatePulseTrainGP17Payload"/>
+    /// <seealso cref="CreatePulseTrainGP18Payload"/>
+    /// <seealso cref="CreatePulseTrainGP19Payload"/>
+    /// <seealso cref="CreatePulseTrainGP20Payload"/>
+    /// <seealso cref="CreatePulseTrainGP21Payload"/>
+    /// <seealso cref="CreatePulseTrainGP22Payload"/>
+    /// <seealso cref="CreatePulseEventEnablePayload"/>
     [XmlInclude(typeof(CreateDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateDigitalOutputClearPayload))]
     [XmlInclude(typeof(CreateDigitalOutputTogglePayload))]
     [XmlInclude(typeof(CreateDigitalOutputStatePayload))]
-    [XmlInclude(typeof(CreateStartPulseTrainPayload))]
-    [XmlInclude(typeof(CreateStopPulseTrainPayload))]
     [XmlInclude(typeof(CreateAnalogDataPayload))]
+    [XmlInclude(typeof(CreatePulseTrainGP15Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP16Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP17Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP18Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP19Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP20Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP21Payload))]
+    [XmlInclude(typeof(CreatePulseTrainGP22Payload))]
+    [XmlInclude(typeof(CreatePulseEventEnablePayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalInputStatePayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputSetPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputClearPayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputTogglePayload))]
     [XmlInclude(typeof(CreateTimestampedDigitalOutputStatePayload))]
-    [XmlInclude(typeof(CreateTimestampedStartPulseTrainPayload))]
-    [XmlInclude(typeof(CreateTimestampedStopPulseTrainPayload))]
     [XmlInclude(typeof(CreateTimestampedAnalogDataPayload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP15Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP16Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP17Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP18Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP19Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP20Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP21Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseTrainGP22Payload))]
+    [XmlInclude(typeof(CreateTimestampedPulseEventEnablePayload))]
     [Description("Creates standard messages for the Hobgoblin device.")]
     public partial class CreateMessage : CreateMessageBuilder, INamedElement, ICustomTypeDescriptor
     {
@@ -1370,19 +2279,19 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates DigitalOutputSet register messages. Sets the specified
-    /// digital output lines.
+    /// output lines and reports each pulse start. Setting a line stops its pulse train.
     /// </summary>
     [DisplayName("DigitalOutputSetPayload")]
-    [Description("Sets the specified digital output lines.")]
+    [Description("Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.")]
     public partial class CreateDigitalOutputSetPayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(DigitalOutputSet);
 
         /// <summary>
-        /// Gets or sets the value for the DigitalOutputSet register. Sets the specified digital output
-        /// lines.
+        /// Gets or sets the value for the DigitalOutputSet register. Sets the specified output lines and
+        /// reports each pulse start. Setting a line stops its pulse train.
         /// </summary>
-        [Description("Sets the specified digital output lines.")]
+        [Description("Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.")]
         public DigitalOutputs DigitalOutputSet { get; set; }
 
         /// <summary>
@@ -1407,10 +2316,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates timestamped DigitalOutputSet register messages. Sets the
-    /// specified digital output lines.
+    /// specified output lines and reports each pulse start. Setting a line stops its pulse train.
     /// </summary>
     [DisplayName("TimestampedDigitalOutputSetPayload")]
-    [Description("Sets the specified digital output lines.")]
+    [Description("Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.")]
     public partial class CreateTimestampedDigitalOutputSetPayload : CreateDigitalOutputSetPayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputSet);
@@ -1429,19 +2338,19 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates DigitalOutputClear register messages. Clears the specified
-    /// digital output lines.
+    /// output lines. Clearing a line stops its pulse train.
     /// </summary>
     [DisplayName("DigitalOutputClearPayload")]
-    [Description("Clears the specified digital output lines.")]
+    [Description("Clears the specified output lines. Clearing a line stops its pulse train.")]
     public partial class CreateDigitalOutputClearPayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(DigitalOutputClear);
 
         /// <summary>
-        /// Gets or sets the value for the DigitalOutputClear register. Clears the specified digital output
-        /// lines.
+        /// Gets or sets the value for the DigitalOutputClear register. Clears the specified output lines.
+        /// Clearing a line stops its pulse train.
         /// </summary>
-        [Description("Clears the specified digital output lines.")]
+        [Description("Clears the specified output lines. Clearing a line stops its pulse train.")]
         public DigitalOutputs DigitalOutputClear { get; set; }
 
         /// <summary>
@@ -1466,10 +2375,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates timestamped DigitalOutputClear register messages. Clears the
-    /// specified digital output lines.
+    /// specified output lines. Clearing a line stops its pulse train.
     /// </summary>
     [DisplayName("TimestampedDigitalOutputClearPayload")]
-    [Description("Clears the specified digital output lines.")]
+    [Description("Clears the specified output lines. Clearing a line stops its pulse train.")]
     public partial class CreateTimestampedDigitalOutputClearPayload : CreateDigitalOutputClearPayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputClear);
@@ -1488,19 +2397,19 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates DigitalOutputToggle register messages. Toggles the specified
-    /// digital output lines.
+    /// output lines. Toggling a line stops its pulse train.
     /// </summary>
     [DisplayName("DigitalOutputTogglePayload")]
-    [Description("Toggles the specified digital output lines.")]
+    [Description("Toggles the specified output lines. Toggling a line stops its pulse train.")]
     public partial class CreateDigitalOutputTogglePayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(DigitalOutputToggle);
 
         /// <summary>
-        /// Gets or sets the value for the DigitalOutputToggle register. Toggles the specified digital
-        /// output lines.
+        /// Gets or sets the value for the DigitalOutputToggle register. Toggles the specified output lines.
+        /// Toggling a line stops its pulse train.
         /// </summary>
-        [Description("Toggles the specified digital output lines.")]
+        [Description("Toggles the specified output lines. Toggling a line stops its pulse train.")]
         public DigitalOutputs DigitalOutputToggle { get; set; }
 
         /// <summary>
@@ -1525,10 +2434,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates timestamped DigitalOutputToggle register messages. Toggles
-    /// the specified digital output lines.
+    /// the specified output lines. Toggling a line stops its pulse train.
     /// </summary>
     [DisplayName("TimestampedDigitalOutputTogglePayload")]
-    [Description("Toggles the specified digital output lines.")]
+    [Description("Toggles the specified output lines. Toggling a line stops its pulse train.")]
     public partial class CreateTimestampedDigitalOutputTogglePayload : CreateDigitalOutputTogglePayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputToggle);
@@ -1547,19 +2456,19 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates DigitalOutputState register messages. Writes the state of
-    /// all digital output lines.
+    /// all output lines. Writing the state stops every pulse train.
     /// </summary>
     [DisplayName("DigitalOutputStatePayload")]
-    [Description("Writes the state of all digital output lines.")]
+    [Description("Writes the state of all output lines. Writing the state stops every pulse train.")]
     public partial class CreateDigitalOutputStatePayload : IRegisterPayload
     {
         Type IRegisterPayload.RegisterType => typeof(DigitalOutputState);
 
         /// <summary>
-        /// Gets or sets the value for the DigitalOutputState register. Writes the state of all digital
-        /// output lines.
+        /// Gets or sets the value for the DigitalOutputState register. Writes the state of all output
+        /// lines. Writing the state stops every pulse train.
         /// </summary>
-        [Description("Writes the state of all digital output lines.")]
+        [Description("Writes the state of all output lines. Writing the state stops every pulse train.")]
         public DigitalOutputs DigitalOutputState { get; set; }
 
         /// <summary>
@@ -1584,10 +2493,10 @@ namespace Harp.Hobgoblin
 
     /// <summary>
     /// Represents an operator that creates timestamped DigitalOutputState register messages. Writes the
-    /// state of all digital output lines.
+    /// state of all output lines. Writing the state stops every pulse train.
     /// </summary>
     [DisplayName("TimestampedDigitalOutputStatePayload")]
-    [Description("Writes the state of all digital output lines.")]
+    [Description("Writes the state of all output lines. Writing the state stops every pulse train.")]
     public partial class CreateTimestampedDigitalOutputStatePayload : CreateDigitalOutputStatePayload, ITimestampedRegister
     {
         Type ITimestampedRegister.RegisterType => typeof(DigitalOutputState);
@@ -1601,150 +2510,6 @@ namespace Harp.Hobgoblin
         public HarpMessage GetMessage(double timestamp, MessageType messageType)
         {
             return Harp.Hobgoblin.DigitalOutputState.FromPayload(timestamp, messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates StartPulseTrain register messages. Starts a pulse train
-    /// driving the specified digital output lines.
-    /// </summary>
-    [DisplayName("StartPulseTrainPayload")]
-    [Description("Starts a pulse train driving the specified digital output lines.")]
-    public partial class CreateStartPulseTrainPayload : IRegisterPayload
-    {
-        Type IRegisterPayload.RegisterType => typeof(StartPulseTrain);
-
-        /// <summary>
-        /// Gets or sets the value of the DigitalOutput payload member. Specifies the digital output lines
-        /// set by each pulse of the pulse train.
-        /// </summary>
-        [Description("Specifies the digital output lines set by each pulse of the pulse train.")]
-        public DigitalOutputs DigitalOutput { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
-        /// that each pulse is HIGH.
-        /// </summary>
-        [Description("Specifies the duration in microseconds that each pulse is HIGH.")]
-        public uint PulseWidth { get; set; } = 500000;
-
-        /// <summary>
-        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
-        /// between each pulse in the pulse train.
-        /// </summary>
-        [Description("Specifies the interval in microseconds between each pulse in the pulse train.")]
-        public uint PulsePeriod { get; set; } = 1000000;
-
-        /// <summary>
-        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
-        /// PWM pulse train. A value of zero signifies an infinite pulse train.
-        /// </summary>
-        [Description("Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.")]
-        public uint PulseCount { get; set; } = 1;
-
-        /// <summary>
-        /// Creates a message payload for the StartPulseTrain register.
-        /// </summary>
-        /// <returns>The created message payload value.</returns>
-        public StartPulseTrainPayload GetPayload()
-        {
-            StartPulseTrainPayload value;
-            value.DigitalOutput = DigitalOutput;
-            value.PulseWidth = PulseWidth;
-            value.PulsePeriod = PulsePeriod;
-            value.PulseCount = PulseCount;
-            return value;
-        }
-
-        /// <summary>
-        /// Creates a message for the StartPulseTrain register.
-        /// </summary>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new message for the StartPulseTrain register.</returns>
-        public HarpMessage GetMessage(MessageType messageType)
-        {
-            return Harp.Hobgoblin.StartPulseTrain.FromPayload(messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates timestamped StartPulseTrain register messages. Starts a
-    /// pulse train driving the specified digital output lines.
-    /// </summary>
-    [DisplayName("TimestampedStartPulseTrainPayload")]
-    [Description("Starts a pulse train driving the specified digital output lines.")]
-    public partial class CreateTimestampedStartPulseTrainPayload : CreateStartPulseTrainPayload, ITimestampedRegister
-    {
-        Type ITimestampedRegister.RegisterType => typeof(StartPulseTrain);
-
-        /// <summary>
-        /// Creates a timestamped message for the StartPulseTrain register.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new timestamped message for the StartPulseTrain register.</returns>
-        public HarpMessage GetMessage(double timestamp, MessageType messageType)
-        {
-            return Harp.Hobgoblin.StartPulseTrain.FromPayload(timestamp, messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates StopPulseTrain register messages. Stops the pulse train
-    /// running on the specified digital output lines.
-    /// </summary>
-    [DisplayName("StopPulseTrainPayload")]
-    [Description("Stops the pulse train running on the specified digital output lines.")]
-    public partial class CreateStopPulseTrainPayload : IRegisterPayload
-    {
-        Type IRegisterPayload.RegisterType => typeof(StopPulseTrain);
-
-        /// <summary>
-        /// Gets or sets the value for the StopPulseTrain register. Stops the pulse train running on the
-        /// specified digital output lines.
-        /// </summary>
-        [Description("Stops the pulse train running on the specified digital output lines.")]
-        public DigitalOutputs StopPulseTrain { get; set; }
-
-        /// <summary>
-        /// Creates a message payload for the StopPulseTrain register.
-        /// </summary>
-        /// <returns>The created message payload value.</returns>
-        public DigitalOutputs GetPayload()
-        {
-            return StopPulseTrain;
-        }
-
-        /// <summary>
-        /// Creates a message for the StopPulseTrain register.
-        /// </summary>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new message for the StopPulseTrain register.</returns>
-        public HarpMessage GetMessage(MessageType messageType)
-        {
-            return Harp.Hobgoblin.StopPulseTrain.FromPayload(messageType, GetPayload());
-        }
-    }
-
-    /// <summary>
-    /// Represents an operator that creates timestamped StopPulseTrain register messages. Stops the
-    /// pulse train running on the specified digital output lines.
-    /// </summary>
-    [DisplayName("TimestampedStopPulseTrainPayload")]
-    [Description("Stops the pulse train running on the specified digital output lines.")]
-    public partial class CreateTimestampedStopPulseTrainPayload : CreateStopPulseTrainPayload, ITimestampedRegister
-    {
-        Type ITimestampedRegister.RegisterType => typeof(StopPulseTrain);
-
-        /// <summary>
-        /// Creates a timestamped message for the StopPulseTrain register.
-        /// </summary>
-        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
-        /// <param name="messageType">Specifies the type of the created message.</param>
-        /// <returns>A new timestamped message for the StopPulseTrain register.</returns>
-        public HarpMessage GetMessage(double timestamp, MessageType messageType)
-        {
-            return Harp.Hobgoblin.StopPulseTrain.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -1827,68 +2592,693 @@ namespace Harp.Hobgoblin
     }
 
     /// <summary>
-    /// Represents the StartPulseTrain payload.
+    /// Represents an operator that creates PulseTrainGP15 register messages. Starts a pulse train on
+    /// digital output GP15, or stops it if the pulse width is zero.
     /// </summary>
-    public struct StartPulseTrainPayload
+    [DisplayName("PulseTrainGP15Payload")]
+    [Description("Starts a pulse train on digital output GP15, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP15Payload : IRegisterPayload
     {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP15);
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="StartPulseTrainPayload"/> structure.
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
         /// </summary>
-        /// <param name="digitalOutput">Specifies the digital output lines set by each pulse of the pulse train.</param>
-        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is HIGH.</param>
-        /// <param name="pulsePeriod">Specifies the interval in microseconds between each pulse in the pulse train.</param>
-        /// <param name="pulseCount">Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.</param>
-        public StartPulseTrainPayload(
-            DigitalOutputs digitalOutput,
-            uint pulseWidth,
-            uint pulsePeriod,
-            uint pulseCount)
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP15 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP15Payload GetPayload()
         {
-            DigitalOutput = digitalOutput;
-            PulseWidth = pulseWidth;
-            PulsePeriod = pulsePeriod;
-            PulseCount = pulseCount;
+            PulseTrainGP15Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
         }
 
         /// <summary>
-        /// Specifies the digital output lines set by each pulse of the pulse train.
+        /// Creates a message for the PulseTrainGP15 register.
         /// </summary>
-        [Description("Specifies the digital output lines set by each pulse of the pulse train.")]
-        public DigitalOutputs DigitalOutput;
-
-        /// <summary>
-        /// Specifies the duration in microseconds that each pulse is HIGH.
-        /// </summary>
-        [Description("Specifies the duration in microseconds that each pulse is HIGH.")]
-        public uint PulseWidth;
-
-        /// <summary>
-        /// Specifies the interval in microseconds between each pulse in the pulse train.
-        /// </summary>
-        [Description("Specifies the interval in microseconds between each pulse in the pulse train.")]
-        public uint PulsePeriod;
-
-        /// <summary>
-        /// Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite
-        /// pulse train.
-        /// </summary>
-        [Description("Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.")]
-        public uint PulseCount;
-
-        /// <summary>
-        /// Returns a <see cref="string"/> that represents the StartPulseTrain payload.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="string"/> that represents the StartPulseTrain payload.
-        /// </returns>
-        public override string ToString()
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP15 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
         {
-            return "StartPulseTrainPayload { " +
-                "DigitalOutput = " + DigitalOutput + ", " +
-                "PulseWidth = " + PulseWidth + ", " +
-                "PulsePeriod = " + PulsePeriod + ", " +
-                "PulseCount = " + PulseCount + " " +
-            "}";
+            return Harp.Hobgoblin.PulseTrainGP15.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP15 register messages. Starts a pulse
+    /// train on digital output GP15, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP15Payload")]
+    [Description("Starts a pulse train on digital output GP15, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP15Payload : CreatePulseTrainGP15Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP15);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP15 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP15 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP15.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP16 register messages. Starts a pulse train on
+    /// digital output GP16, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP16Payload")]
+    [Description("Starts a pulse train on digital output GP16, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP16Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP16);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP16 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP16Payload GetPayload()
+        {
+            PulseTrainGP16Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP16 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP16 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP16.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP16 register messages. Starts a pulse
+    /// train on digital output GP16, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP16Payload")]
+    [Description("Starts a pulse train on digital output GP16, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP16Payload : CreatePulseTrainGP16Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP16);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP16 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP16 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP16.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP17 register messages. Starts a pulse train on
+    /// digital output GP17, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP17Payload")]
+    [Description("Starts a pulse train on digital output GP17, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP17Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP17);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP17 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP17Payload GetPayload()
+        {
+            PulseTrainGP17Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP17 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP17 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP17.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP17 register messages. Starts a pulse
+    /// train on digital output GP17, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP17Payload")]
+    [Description("Starts a pulse train on digital output GP17, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP17Payload : CreatePulseTrainGP17Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP17);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP17 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP17 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP17.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP18 register messages. Starts a pulse train on
+    /// digital output GP18, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP18Payload")]
+    [Description("Starts a pulse train on digital output GP18, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP18Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP18);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP18 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP18Payload GetPayload()
+        {
+            PulseTrainGP18Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP18 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP18 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP18.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP18 register messages. Starts a pulse
+    /// train on digital output GP18, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP18Payload")]
+    [Description("Starts a pulse train on digital output GP18, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP18Payload : CreatePulseTrainGP18Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP18);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP18 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP18 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP18.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP19 register messages. Starts a pulse train on
+    /// digital output GP19, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP19Payload")]
+    [Description("Starts a pulse train on digital output GP19, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP19Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP19);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP19 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP19Payload GetPayload()
+        {
+            PulseTrainGP19Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP19 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP19 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP19.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP19 register messages. Starts a pulse
+    /// train on digital output GP19, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP19Payload")]
+    [Description("Starts a pulse train on digital output GP19, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP19Payload : CreatePulseTrainGP19Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP19);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP19 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP19 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP19.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP20 register messages. Starts a pulse train on
+    /// digital output GP20, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP20Payload")]
+    [Description("Starts a pulse train on digital output GP20, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP20Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP20);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP20 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP20Payload GetPayload()
+        {
+            PulseTrainGP20Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP20 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP20 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP20.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP20 register messages. Starts a pulse
+    /// train on digital output GP20, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP20Payload")]
+    [Description("Starts a pulse train on digital output GP20, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP20Payload : CreatePulseTrainGP20Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP20);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP20 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP20 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP20.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP21 register messages. Starts a pulse train on
+    /// digital output GP21, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP21Payload")]
+    [Description("Starts a pulse train on digital output GP21, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP21Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP21);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP21 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP21Payload GetPayload()
+        {
+            PulseTrainGP21Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP21 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP21 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP21.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP21 register messages. Starts a pulse
+    /// train on digital output GP21, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP21Payload")]
+    [Description("Starts a pulse train on digital output GP21, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP21Payload : CreatePulseTrainGP21Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP21);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP21 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP21 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP21.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseTrainGP22 register messages. Starts a pulse train on
+    /// digital output GP22, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("PulseTrainGP22Payload")]
+    [Description("Starts a pulse train on digital output GP22, or stops it if the pulse width is zero.")]
+    public partial class CreatePulseTrainGP22Payload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseTrainGP22);
+
+        /// <summary>
+        /// Gets or sets the value of the PulseWidth payload member. Specifies the duration in microseconds
+        /// that each pulse is high. A value of zero stops the pulse train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth { get; set; } = 500000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulsePeriod payload member. Specifies the interval in microseconds
+        /// between the start of each pulse.
+        /// </summary>
+        [Range(min: 1, max: long.MaxValue)]
+        [Editor(DesignTypes.NumericUpDownEditor, DesignTypes.UITypeEditor)]
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod { get; set; } = 1000000;
+
+        /// <summary>
+        /// Gets or sets the value of the PulseCount payload member. Specifies the number of pulses in the
+        /// pulse train. A value of zero runs the pulse train until it is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount { get; set; } = 1;
+
+        /// <summary>
+        /// Creates a message payload for the PulseTrainGP22 register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public PulseTrainGP22Payload GetPayload()
+        {
+            PulseTrainGP22Payload value;
+            value.PulseWidth = PulseWidth;
+            value.PulsePeriod = PulsePeriod;
+            value.PulseCount = PulseCount;
+            return value;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseTrainGP22 register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseTrainGP22 register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP22.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseTrainGP22 register messages. Starts a pulse
+    /// train on digital output GP22, or stops it if the pulse width is zero.
+    /// </summary>
+    [DisplayName("TimestampedPulseTrainGP22Payload")]
+    [Description("Starts a pulse train on digital output GP22, or stops it if the pulse width is zero.")]
+    public partial class CreateTimestampedPulseTrainGP22Payload : CreatePulseTrainGP22Payload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseTrainGP22);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseTrainGP22 register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseTrainGP22 register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseTrainGP22.FromPayload(timestamp, messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates PulseEventEnable register messages. Specifies the digital
+    /// output lines whose pulse trains report the start of each pulse on DigitalOutputSet.
+    /// </summary>
+    [DisplayName("PulseEventEnablePayload")]
+    [Description("Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.")]
+    public partial class CreatePulseEventEnablePayload : IRegisterPayload
+    {
+        Type IRegisterPayload.RegisterType => typeof(PulseEventEnable);
+
+        /// <summary>
+        /// Gets or sets the value for the PulseEventEnable register. Specifies the digital output lines
+        /// whose pulse trains report the start of each pulse on DigitalOutputSet.
+        /// </summary>
+        [Description("Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.")]
+        public DigitalOutputs PulseEventEnable { get; set; } = DigitalOutputs.GP15 | DigitalOutputs.GP16 | DigitalOutputs.GP17 | DigitalOutputs.GP18 | DigitalOutputs.GP19 | DigitalOutputs.GP20 | DigitalOutputs.GP21 | DigitalOutputs.GP22;
+
+        /// <summary>
+        /// Creates a message payload for the PulseEventEnable register.
+        /// </summary>
+        /// <returns>The created message payload value.</returns>
+        public DigitalOutputs GetPayload()
+        {
+            return PulseEventEnable;
+        }
+
+        /// <summary>
+        /// Creates a message for the PulseEventEnable register.
+        /// </summary>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new message for the PulseEventEnable register.</returns>
+        public HarpMessage GetMessage(MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseEventEnable.FromPayload(messageType, GetPayload());
+        }
+    }
+
+    /// <summary>
+    /// Represents an operator that creates timestamped PulseEventEnable register messages. Specifies
+    /// the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.
+    /// </summary>
+    [DisplayName("TimestampedPulseEventEnablePayload")]
+    [Description("Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.")]
+    public partial class CreateTimestampedPulseEventEnablePayload : CreatePulseEventEnablePayload, ITimestampedRegister
+    {
+        Type ITimestampedRegister.RegisterType => typeof(PulseEventEnable);
+
+        /// <summary>
+        /// Creates a timestamped message for the PulseEventEnable register.
+        /// </summary>
+        /// <param name="timestamp">The timestamp of the message, in seconds.</param>
+        /// <param name="messageType">Specifies the type of the created message.</param>
+        /// <returns>A new timestamped message for the PulseEventEnable register.</returns>
+        public HarpMessage GetMessage(double timestamp, MessageType messageType)
+        {
+            return Harp.Hobgoblin.PulseEventEnable.FromPayload(timestamp, messageType, GetPayload());
         }
     }
 
@@ -1943,6 +3333,462 @@ namespace Harp.Hobgoblin
                 "AnalogInput0 = " + AnalogInput0 + ", " +
                 "AnalogInput1 = " + AnalogInput1 + ", " +
                 "AnalogInput2 = " + AnalogInput2 + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP15 payload.
+    /// </summary>
+    public struct PulseTrainGP15Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP15Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP15Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP15 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP15 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP15Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP16 payload.
+    /// </summary>
+    public struct PulseTrainGP16Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP16Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP16Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP16 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP16 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP16Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP17 payload.
+    /// </summary>
+    public struct PulseTrainGP17Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP17Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP17Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP17 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP17 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP17Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP18 payload.
+    /// </summary>
+    public struct PulseTrainGP18Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP18Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP18Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP18 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP18 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP18Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP19 payload.
+    /// </summary>
+    public struct PulseTrainGP19Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP19Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP19Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP19 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP19 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP19Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP20 payload.
+    /// </summary>
+    public struct PulseTrainGP20Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP20Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP20Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP20 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP20 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP20Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP21 payload.
+    /// </summary>
+    public struct PulseTrainGP21Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP21Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP21Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP21 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP21 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP21Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
+            "}";
+        }
+    }
+
+    /// <summary>
+    /// Represents the PulseTrainGP22 payload.
+    /// </summary>
+    public struct PulseTrainGP22Payload
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PulseTrainGP22Payload"/> structure.
+        /// </summary>
+        /// <param name="pulseWidth">Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.</param>
+        /// <param name="pulsePeriod">Specifies the interval in microseconds between the start of each pulse.</param>
+        /// <param name="pulseCount">Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.</param>
+        public PulseTrainGP22Payload(
+            uint pulseWidth,
+            uint pulsePeriod,
+            uint pulseCount)
+        {
+            PulseWidth = pulseWidth;
+            PulsePeriod = pulsePeriod;
+            PulseCount = pulseCount;
+        }
+
+        /// <summary>
+        /// Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse
+        /// train.
+        /// </summary>
+        [Description("Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.")]
+        public uint PulseWidth;
+
+        /// <summary>
+        /// Specifies the interval in microseconds between the start of each pulse.
+        /// </summary>
+        [Description("Specifies the interval in microseconds between the start of each pulse.")]
+        public uint PulsePeriod;
+
+        /// <summary>
+        /// Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it
+        /// is stopped.
+        /// </summary>
+        [Description("Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.")]
+        public uint PulseCount;
+
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents the PulseTrainGP22 payload.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents the PulseTrainGP22 payload.
+        /// </returns>
+        public override string ToString()
+        {
+            return "PulseTrainGP22Payload { " +
+                "PulseWidth = " + PulseWidth + ", " +
+                "PulsePeriod = " + PulsePeriod + ", " +
+                "PulseCount = " + PulseCount + " " +
             "}";
         }
     }

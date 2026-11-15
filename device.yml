@@ -17,52 +17,24 @@ registers:
     type: U8
     access: [Write, Event]
     maskType: DigitalOutputs
-    description: Sets the specified digital output lines.
+    description: Sets the specified output lines and reports each pulse start. Setting a line stops its pulse train.
   DigitalOutputClear:
     <<: *doutput
     address: 34
-    access: [Write, Event]
-    description: Clears the specified digital output lines.
+    access: Write
+    description: Clears the specified output lines. Clearing a line stops its pulse train.
   DigitalOutputToggle:
     <<: *doutput
     address: 35
-    description: Toggles the specified digital output lines.
+    access: Write
+    description: Toggles the specified output lines. Toggling a line stops its pulse train.
   DigitalOutputState:
     <<: *doutput
     address: 36
-    description: Writes the state of all digital output lines.
-  StartPulseTrain:
-    address: 37
-    type: U32
-    length: 4
     access: Write
-    description: Starts a pulse train driving the specified digital output lines.
-    payloadSpec:
-      DigitalOutput:
-        offset: 0
-        mask: 0xFF
-        maskType: DigitalOutputs
-        description: Specifies the digital output lines set by each pulse of the pulse train.
-      PulseWidth:
-        offset: 1
-        defaultValue: 500000
-        description: Specifies the duration in microseconds that each pulse is HIGH.
-      PulsePeriod:
-        offset: 2
-        defaultValue: 1000000
-        description: Specifies the interval in microseconds between each pulse in the pulse train.
-      PulseCount:
-        offset: 3
-        defaultValue: 1
-        description: Specifies the number of pulses in the PWM pulse train. A value of zero signifies an infinite pulse train.
-  StopPulseTrain:
-    address: 38
-    type: U8
-    access: [Write, Event]
-    maskType: DigitalOutputs
-    description: Stops the pulse train running on the specified digital output lines.
+    description: Writes the state of all output lines. Writing the state stops every pulse train.
   AnalogData:
-    address: 39
+    address: 37
     type: U16
     length: 3
     access: Event
@@ -77,6 +49,61 @@ registers:
       AnalogInput2:
         offset: 2
         description: The analog value sampled from ADC channel 2.
+  PulseTrainGP15: &pulseTrain
+    address: 38
+    type: U32
+    length: 3
+    access: [Write, Event]
+    description: Starts a pulse train on digital output GP15, or stops it if the pulse width is zero.
+    payloadSpec:
+      PulseWidth:
+        offset: 0
+        defaultValue: 500000
+        description: Specifies the duration in microseconds that each pulse is high. A value of zero stops the pulse train.
+      PulsePeriod:
+        offset: 1
+        defaultValue: 1000000
+        minValue: 1
+        description: Specifies the interval in microseconds between the start of each pulse.
+      PulseCount:
+        offset: 2
+        defaultValue: 1
+        description: Specifies the number of pulses in the pulse train. A value of zero runs the pulse train until it is stopped.
+  PulseTrainGP16:
+    <<: *pulseTrain
+    address: 39
+    description: Starts a pulse train on digital output GP16, or stops it if the pulse width is zero.
+  PulseTrainGP17:
+    <<: *pulseTrain
+    address: 40
+    description: Starts a pulse train on digital output GP17, or stops it if the pulse width is zero.
+  PulseTrainGP18:
+    <<: *pulseTrain
+    address: 41
+    description: Starts a pulse train on digital output GP18, or stops it if the pulse width is zero.
+  PulseTrainGP19:
+    <<: *pulseTrain
+    address: 42
+    description: Starts a pulse train on digital output GP19, or stops it if the pulse width is zero.
+  PulseTrainGP20:
+    <<: *pulseTrain
+    address: 43
+    description: Starts a pulse train on digital output GP20, or stops it if the pulse width is zero.
+  PulseTrainGP21:
+    <<: *pulseTrain
+    address: 44
+    description: Starts a pulse train on digital output GP21, or stops it if the pulse width is zero.
+  PulseTrainGP22:
+    <<: *pulseTrain
+    address: 45
+    description: Starts a pulse train on digital output GP22, or stops it if the pulse width is zero.
+  PulseEventEnable:
+    address: 46
+    type: U8
+    access: Write
+    maskType: DigitalOutputs
+    defaultValue: 255
+    description: Specifies the digital output lines whose pulse trains report the start of each pulse on DigitalOutputSet.
 bitMasks:
   DigitalInputs:
     description: Specifies the state of port digital input lines.
