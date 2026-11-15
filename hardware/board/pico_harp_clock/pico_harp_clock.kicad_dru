@@ -1,0 +1,7 @@
+(version 1)
+
+# Keep the isolated clock-output side (ISO_* nets) away from everything else.
+# This is ground-loop isolation, not safety isolation, so 0.5 mm is plenty.
+(rule "isolation_gap"
+  (condition "A.NetName =~ '*ISO_*' && !(B.NetName =~ '*ISO_*')")
+  (constraint clearance (min 0.5mm)))
