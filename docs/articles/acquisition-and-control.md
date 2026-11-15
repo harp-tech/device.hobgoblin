@@ -40,7 +40,7 @@ In Bonsai:
 
 - Insert a [`Parse`] operator.
 - Select the [`Parse`] operator, and pick [`AnalogData`] from the `Register` property dropdown menu. 
-- Right-click on the [`Parse`] operator, select `Harp.Hobgoblin.AnalogDataPayload` > `AnalogInput0` from the context menu. This will select data from the first analog input channel.
+- Right-click the [`Parse`] operator, select `Harp.Hobgoblin.AnalogDataPayload` > `AnalogInput0` from the context menu. This will select data from the first analog input channel.
 
 > [!NOTE]
 > Harp devices send data, and receive commands, encoded as [`HarpMessage`] objects following the [Harp binary protocol](https://harp-tech.org/protocol/BinaryProtocol-8bit.html). The [`Parse`] operator is able to recognize and decode messages arriving from a specific `Register` (e.g. [`AnalogData`]) and recover the data encoded in the message payload (e.g. [`AnalogDataPayload`]).
@@ -73,14 +73,14 @@ For simple use cases, data can be saved to a text file using [`CsvWriter`]. In a
 ![Saving Data CSV](../workflows/hobgoblin-acquisition-analogcsv.bonsai)
 :::
 
-- Add a [`CsvWriter`] operator in between [`Parse`] and [`RollingGraph`].
+- Add a [`CsvWriter`] operator between [`Parse`] and [`RollingGraph`].
 - Configure the `FileName` property of the [`CsvWriter`] with a file name ending in `.csv`, for instance `AnalogData.csv`.
 - Set the `IncludeHeader` property of the [`CsvWriter`] to `True`. This automatically creates column headings for the text file.
 - Run the workflow, shine the light on the photodiode, and then open the resulting text file.  
 **How is the data organized?**
 
 > [!TIP]
-> You can set the `Overwrite` property of the `CsvWriter` to `True` to avoid having to delete old files before each run. Be careful to disable this during actual experiment recordings!
+> You can set the `Overwrite` property of the `CsvWriter` to `True` to avoid having to delete old files before each run. Be careful to disable this during actual experiment recordings.
 
 ### Exercise 4: Visualizing recorded data
 
@@ -118,7 +118,7 @@ In the control section of this tutorial, we will send commands to turn on and of
 
 ![Hobgoblin LED](../images/hobgoblin-acquisition-led.svg){width=400px}
 
-Previously we have been acquiring data from the `Hobgoblin` by placing operators after the [`Device`] operator. In order to send commands to the device, we need to place operators that lead into the [`Device`] operator.
+Previously we have been acquiring data from the `Hobgoblin` by placing operators after the [`Device`] operator. To send commands to the device, we need to place operators that lead into the [`Device`] operator.
 
 :::workflow
 ![Digital Output](../workflows/hobgoblin-acquisition-digitaloutput.bonsai)

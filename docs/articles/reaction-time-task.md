@@ -131,7 +131,7 @@ pd.Series(valid_response_times).plot(kind="hist")
 
 ## Exercise 4: Driving state transitions with external behavior events
 
-In order to translate our simple reaction time task in the previous exercises into a proper state machine, we need to split up the fixed interval stimulus into different states. It is often convenient to consider the inter-trial interval period as the initial state, followed by stimulus presentation. 
+To translate our simple reaction time task in the previous exercises into a proper state machine, we need to split up the fixed interval stimulus into different states. It is often convenient to consider the inter-trial interval period as the initial state, followed by stimulus presentation. 
 
 :::workflow
 ![Stimulus presentation](../workflows/hobgoblin-reactiontime-stimulus-response.bonsai)
@@ -149,7 +149,7 @@ In order to translate our simple reaction time task in the previous exercises in
 
 - Delete the [`Delay`] operator.
 - Insert a [`SelectMany`] operator after `StimOn`, and set its `Name` property to `Response`.
-- Double-click on the [`SelectMany`] node to open up its internal specification.
+- Double-click the [`SelectMany`] node to open up its internal specification.
 
 > [!Note]
 > The `SelectMany` operator is used here to create a new state for every input event. `Source1` represents the input event that created the state, and `WorkflowOutput` will be used to report the end result from the state (e.g. whether the response was a success or failure).
@@ -162,7 +162,7 @@ In order to translate our simple reaction time task in the previous exercises in
 - Insert a [`SubscribeSubject`] operator. Configure the `Name` property to `Hobgoblin Events`.
 - Insert a [`Parse`] operator after `Hobgoblin Events`. Configure the `Register` property to [`DigitalInputState`].
 - Insert a [`Condition`] operator after the [`Parse`] operator. 
-- Double-click on the [`Condition`] operator and add a [`HasFlag`] operator after the `Source1` operator. Set the `Value` property to `GP2`.
+- Double-click the [`Condition`] operator and add a [`HasFlag`] operator after the `Source1` operator. Set the `Value` property to `GP2`.
 - Insert a [`Take`] operator and set its `Count` property to 1.
 - Connect the [`Take`] operator to `WorkflowOutput`.
 - Run the workflow a couple of times and validate the state machine is responding to the button press.
@@ -207,7 +207,7 @@ We will now implement the task logic inside our nodes.
 ![Stimulus response miss condition](../workflows/hobgoblin-reactiontime-stimulus-response-miss-condition.bonsai)
 :::
 
-- Double-click on the `Miss` node to open up its internal specification.
+- Double-click the `Miss` node to open up its internal specification.
 - Insert a [`BitwiseNot`] operator after `Source1`.
 
 _Why did we need to specify something for the `Miss` condition?_

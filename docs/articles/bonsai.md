@@ -6,7 +6,7 @@ Before beginning:
 - Install Bonsai and the `Harp.Hobgoblin` package, as described in [Installation](installation.md#software-packages).
 - Connect a push button to analog input channel 0, on pin GP26.
 - Connect the Hobgoblin to the computer with a USB cable.
-- Hover over the workflow cell below, click on the "Copy" icon on the top right, and paste the workflow into Bonsai.
+- Hover over the workflow cell below, click the "Copy" icon on the top right, and paste the workflow into Bonsai.
 
 :::workflow
 ![Hobgoblin first steps](../workflows/hobgoblin-helloworld.bonsai)
