@@ -49,7 +49,7 @@
       "type": "sch_export_plot_pdf"
     },
     {
-      "description": "BOM (JLCPCB columns)",
+      "description": "BOM for JLCPCB",
       "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b04",
       "settings": {
         "bom_format_preset_name": "CSV",
@@ -57,14 +57,30 @@
         "description": "",
         "exclude_dnp": true,
         "field_delimiter": ",",
-        "fields_group_by": ["Value", "Footprint", "LCSC"],
-        "fields_labels": ["Comment", "Designator", "Footprint", "LCSC", "Quantity"],
-        "fields_ordered": ["Value", "Reference", "Footprint", "LCSC", "${QUANTITY}"],
+        "fields_group_by": [
+          "Value",
+          "Footprint",
+          "LCSC"
+        ],
+        "fields_labels": [
+          "Comment",
+          "Designator",
+          "Footprint",
+          "LCSC",
+          "Quantity"
+        ],
+        "fields_ordered": [
+          "Value",
+          "Reference",
+          "Footprint",
+          "LCSC",
+          "${QUANTITY}"
+        ],
         "filter_string": "",
         "include_excluded_from_bom": false,
         "keep_line_breaks": false,
         "keep_tabs": false,
-        "output_filename": "./pico_harp_clock_BOM.csv",
+        "output_filename": "./pico_harp_clock_BOM_JLCPCB.csv",
         "ref_delimiter": ",",
         "ref_range_delimiter": "",
         "sort_asc": true,
@@ -83,7 +99,17 @@
         "disable_aperture_macros": false,
         "drawing_sheet": "",
         "include_netlist_attributes": true,
-        "layers": ["F.Cu", "B.Cu", "F.Paste", "B.Paste", "F.SilkS", "B.SilkS", "F.Mask", "B.Mask", "Edge.Cuts"],
+        "layers": [
+          "F.Cu",
+          "B.Cu",
+          "F.Paste",
+          "B.Paste",
+          "F.SilkS",
+          "B.SilkS",
+          "F.Mask",
+          "B.Mask",
+          "Edge.Cuts"
+        ],
         "layers_to_include_on_all_layers": [],
         "mirror": false,
         "negative": false,
@@ -138,6 +164,55 @@
         "use_drill_place_file_origin": false
       },
       "type": "pcb_export_pos"
+    },
+    {
+      "description": "BOM for PCBWay",
+      "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b08",
+      "settings": {
+        "bom_format_preset_name": "CSV",
+        "bom_preset_name": "",
+        "description": "",
+        "exclude_dnp": true,
+        "field_delimiter": ",",
+        "fields_group_by": [
+          "Value",
+          "Footprint",
+          "MPN"
+        ],
+        "fields_labels": [
+          "Item #",
+          "Designator",
+          "Qty",
+          "Manufacturer",
+          "Mfg Part #",
+          "Description/Value",
+          "Package/Footprint",
+          "Type",
+          "LCSC (alternate source)"
+        ],
+        "fields_ordered": [
+          "${ITEM_NUMBER}",
+          "Reference",
+          "${QUANTITY}",
+          "Manufacturer",
+          "MPN",
+          "Value",
+          "Footprint",
+          "Type",
+          "LCSC"
+        ],
+        "filter_string": "",
+        "include_excluded_from_bom": false,
+        "keep_line_breaks": false,
+        "keep_tabs": false,
+        "output_filename": "./pico_harp_clock_BOM_PCBWay.csv",
+        "ref_delimiter": ",",
+        "ref_range_delimiter": "",
+        "sort_asc": true,
+        "sort_field": "Reference",
+        "string_delimiter": "\""
+      },
+      "type": "sch_export_bom"
     }
   ],
   "meta": {
@@ -145,29 +220,73 @@
   },
   "outputs": [
     {
-      "description": "Reports",
+      "description": "Reports (ERC, DRC)",
       "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c01",
-      "only": ["6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b01", "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b02"],
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b01",
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b02"
+      ],
       "settings": {
         "output_path": "./exports/reports"
       },
       "type": "folder"
     },
     {
-      "description": "Fabrication (Gerbers + drill)",
+      "description": "JLCPCB: Gerbers + drill",
       "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c02",
-      "only": ["6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b05", "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b06"],
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b05",
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b06"
+      ],
       "settings": {
-        "output_path": "./exports/pico_harp_clock_gerbers.zip"
+        "output_path": "./exports/jlcpcb/pico_harp_clock_gerbers.zip"
       },
       "type": "archive"
     },
     {
-      "description": "Assembly (BOM, placement, schematic)",
+      "description": "JLCPCB: BOM + placement",
       "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c03",
-      "only": ["6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b03", "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b04", "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b07"],
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b04",
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b07"
+      ],
       "settings": {
-        "output_path": "./exports/assembly"
+        "output_path": "./exports/jlcpcb"
+      },
+      "type": "folder"
+    },
+    {
+      "description": "PCBWay: Gerbers + drill",
+      "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c04",
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b05",
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b06"
+      ],
+      "settings": {
+        "output_path": "./exports/pcbway/pico_harp_clock_gerbers.zip"
+      },
+      "type": "archive"
+    },
+    {
+      "description": "PCBWay: BOM + placement",
+      "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c05",
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b08",
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b07"
+      ],
+      "settings": {
+        "output_path": "./exports/pcbway"
+      },
+      "type": "folder"
+    },
+    {
+      "description": "Schematic PDF",
+      "id": "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2c06",
+      "only": [
+        "6f1b2a10-0c5e-4d8e-9a51-1f0c3e7a2b03"
+      ],
+      "settings": {
+        "output_path": "./exports"
       },
       "type": "folder"
     }
