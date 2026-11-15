@@ -1,0 +1,15 @@
+# Fabrication / report output from the KiCad jobset (pico_harp_clock.kicad_jobset): never commit
+exports/
+*.zip
+
+# KiCad local state, backups, caches and local history
+.history/
+*.kicad_prl
+*-backups/
+*.lck
+fp-info-cache
+_autosave-*
+\#auto_saved_files#
+
+# Local Python environment left over from the generator scripts
+.venv/
