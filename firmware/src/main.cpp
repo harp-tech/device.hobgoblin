@@ -6,6 +6,8 @@
 #include <hardware/gpio.h>
 #include <hardware/adc.h>
 #include <hardware/dma.h>
+#include <hardware/pwm.h>
+#include <hardware/clocks.h>
 #include <pico/util/queue.h>
 #include <config.h>
 
@@ -24,20 +26,28 @@ inline constexpr uint8_t PULSE_TRAIN_GP15_ADDRESS =
 inline constexpr uint8_t PULSE_EVENT_ENABLE_ADDRESS =
     HarpCore::APP_REG_START_ADDRESS + 14;
 
-// Software pulse trains, one per digital output.
+// Pulse trains, one per digital output. GP18, GP20 and GP22 are channel A of PWM
+// slices 1, 2 and 3, so each can run its train in hardware at its own frequency.
 constexpr size_t pulse_train_count = 8;
+constexpr uint8_t hardware_pulse_mask = 0xA8;
 constexpr uint32_t min_pulse_period_us = 1000;
+constexpr uint32_t min_hardware_period_us = 10;
 constexpr uint32_t max_pulse_event_rate_hz = 2000;
 struct pulse_train_t
 {
     alarm_id_t alarm;
+    uint pin;
+    uint slice;
     uint8_t output_mask;
     uint8_t generation;
+    bool running;
+    bool hardware;
     bool high;
     bool last_pulse;
     uint32_t width_us;
     uint32_t period_us;
     uint32_t remaining;
+    uint64_t last_rise_us;
 };
 pulse_train_t pulse_trains[pulse_train_count];
 
@@ -144,6 +154,7 @@ int64_t pulse_train_callback(alarm_id_t id, void *user_data)
     {
         // Report the end of the train on its register, see send_queued_event.
         pulse_train->alarm = 0;
+        pulse_train->running = false;
         uint8_t index = __builtin_ctz(pulse_train->output_mask);
         queue_event(PULSE_TRAIN_GP15_ADDRESS + index, pulse_train->generation,
                     HarpCore::harp_time_us_64());
@@ -152,12 +163,102 @@ int64_t pulse_train_callback(alarm_id_t id, void *user_data)
     return -(int64_t)(pulse_train->period_us - pulse_train->width_us);
 }
 
+// The PWM counter is 16 bits, so long periods need a clock divider of up to 255.
+// Returns the divider for the period, or zero if it is too long for hardware.
+uint32_t pwm_clock_divider(uint32_t period_us)
+{
+    uint64_t cycles = (uint64_t)period_us * clock_get_hz(clk_sys) / 1000000;
+    uint32_t divider = (cycles + 0xFFFE) / 0xFFFF;
+    return (divider > 0 && divider <= 255) ? divider : 0;
+}
+
+// Wrap interrupts mark each rising edge, needed to report or count pulses.
+bool needs_wrap_interrupt(const pulse_train_t *pulse_train)
+{
+    return pulse_train->remaining > 0 || pulse_train->last_pulse ||
+           (app_regs.pulse_event_enable & pulse_train->output_mask);
+}
+
+void start_hardware_pulse_train(pulse_train_t *pulse_train)
+{
+    uint32_t sys_hz = clock_get_hz(clk_sys);
+    uint32_t divider = pwm_clock_divider(pulse_train->period_us);
+    uint32_t top = (uint64_t)pulse_train->period_us * sys_hz / 1000000 / divider - 1;
+    uint32_t level = (uint64_t)pulse_train->width_us * sys_hz / 1000000 / divider;
+    if (pulse_train->width_us == pulse_train->period_us)
+        level = top + 1;
+
+    // Start at the top, so the first pulse also begins with a wrap interrupt.
+    uint slice = pulse_train->slice;
+    pwm_set_clkdiv_int_frac4(slice, divider, 0);
+    pwm_set_wrap(slice, top);
+    pwm_set_chan_level(slice, PWM_CHAN_A, level);
+    pwm_set_counter(slice, top);
+    pwm_clear_irq(slice);
+    pwm_set_irq_enabled(slice, needs_wrap_interrupt(pulse_train));
+    gpio_set_function(pulse_train->pin, GPIO_FUNC_PWM);
+    pulse_train->hardware = true;
+    pwm_set_enabled(slice, true);
+}
+
+// Hand the pin back to the GPIO output, low, so writes drive it again.
+void stop_hardware_pulse_train(pulse_train_t *pulse_train)
+{
+    pwm_set_irq_enabled(pulse_train->slice, false);
+    pwm_set_enabled(pulse_train->slice, false);
+    pwm_clear_irq(pulse_train->slice);
+    gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
+    gpio_set_function(pulse_train->pin, GPIO_FUNC_SIO);
+    pulse_train->hardware = false;
+}
+
+// Each wrap is the rising edge of a pulse on a hardware train.
+void pwm_wrap_callback()
+{
+    uint32_t status = pwm_get_irq_status_mask();
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        pulse_train_t *pulse_train = &pulse_trains[i];
+        if (!pulse_train->hardware || !(status & (1u << pulse_train->slice)))
+            continue;
+        pwm_clear_irq(pulse_train->slice);
+
+        // The level set after the last pulse kept the pin low for this period.
+        if (pulse_train->last_pulse)
+        {
+            stop_hardware_pulse_train(pulse_train);
+            pulse_train->running = false;
+            queue_event(PULSE_TRAIN_GP15_ADDRESS + i, pulse_train->generation,
+                        pulse_train->last_rise_us + pulse_train->width_us);
+            continue;
+        }
+
+        pulse_train->last_rise_us = HarpCore::harp_time_us_64();
+        if (app_regs.pulse_event_enable & pulse_train->output_mask)
+        {
+            queue_event(DIGITAL_OUTPUT_SET_ADDRESS, pulse_train->output_mask,
+                        pulse_train->last_rise_us);
+        }
+
+        // The channel level is double-buffered, so the current pulse keeps its width.
+        if (pulse_train->remaining > 0 && --pulse_train->remaining == 0)
+        {
+            pwm_set_chan_level(pulse_train->slice, PWM_CHAN_A, 0);
+            pulse_train->last_pulse = true;
+        }
+    }
+}
+
 void cancel_pulse_train(pulse_train_t *pulse_train)
 {
+    if (pulse_train->hardware)
+        stop_hardware_pulse_train(pulse_train);
     if (pulse_train->alarm > 0)
         cancel_alarm(pulse_train->alarm);
     pulse_train->alarm = 0;
+    pulse_train->running = false;
     pulse_train->high = false;
+    pulse_train->last_pulse = false;
 }
 
 // Stop the trains on the specified lines, returning the lines that were running.
@@ -167,7 +268,7 @@ uint8_t stop_pulse_trains(uint8_t output_mask)
     for (size_t i = 0; i < pulse_train_count; i++)
     {
         pulse_train_t *pulse_train = &pulse_trains[i];
-        if ((output_mask & pulse_train->output_mask) && pulse_train->alarm > 0)
+        if ((output_mask & pulse_train->output_mask) && pulse_train->running)
         {
             cancel_pulse_train(pulse_train);
             app_regs.pulse_train[i][0] = 0;
@@ -240,7 +341,7 @@ uint32_t pulse_event_rate_hz(uint8_t event_enable, size_t candidate,
         uint32_t period_us = 0;
         if (i == candidate)
             period_us = candidate_period_us;
-        else if (pulse_trains[i].alarm > 0)
+        else if (pulse_trains[i].running)
             period_us = pulse_trains[i].period_us;
         if (period_us > 0 && (event_enable & pulse_trains[i].output_mask))
             rate_hz += 1000000 / period_us;
@@ -262,7 +363,15 @@ void write_pulse_train(msg_t &msg)
     uint32_t width_us = payload[0];
     uint32_t period_us = payload[1];
     uint32_t count = payload[2];
-    if (width_us > 0 && (period_us < min_pulse_period_us || width_us > period_us ||
+
+    // Only hardware trains without wrap interrupts may run faster than software.
+    pulse_train_t *pulse_train = &pulse_trains[index];
+    bool hardware = (hardware_pulse_mask & pulse_train->output_mask) &&
+                    pwm_clock_divider(period_us) > 0;
+    bool interrupts = !hardware || count > 0 ||
+                      (app_regs.pulse_event_enable & pulse_train->output_mask);
+    uint32_t min_period_us = interrupts ? min_pulse_period_us : min_hardware_period_us;
+    if (width_us > 0 && (period_us < min_period_us || width_us > period_us ||
         pulse_event_rate_hz(app_regs.pulse_event_enable, index, period_us) >
         max_pulse_event_rate_hz))
     {
@@ -271,7 +380,6 @@ void write_pulse_train(msg_t &msg)
     }
 
     // Each write supersedes any end of train still queued, see send_queued_event.
-    pulse_train_t *pulse_train = &pulse_trains[index];
     cancel_pulse_train(pulse_train);
     gpio_clr_mask(pulse_train->output_mask << DO0_PIN);
     pulse_train->generation++;
@@ -284,8 +392,11 @@ void write_pulse_train(msg_t &msg)
         pulse_train->width_us = width_us;
         pulse_train->period_us = period_us;
         pulse_train->remaining = count;
-        pulse_train->last_pulse = false;
-        pulse_train->alarm = add_alarm_in_us(0, pulse_train_callback, pulse_train, true);
+        pulse_train->running = true;
+        if (hardware)
+            start_hardware_pulse_train(pulse_train);
+        else
+            pulse_train->alarm = add_alarm_in_us(0, pulse_train_callback, pulse_train, true);
     }
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
@@ -299,6 +410,13 @@ void write_pulse_event_enable(msg_t &msg)
         return;
     }
     HarpCore::copy_msg_payload_to_register(msg);
+
+    // Running hardware trains only take wrap interrupts while they need them.
+    for (size_t i = 0; i < pulse_train_count; i++)
+    {
+        if (pulse_trains[i].hardware)
+            pwm_set_irq_enabled(pulse_trains[i].slice, needs_wrap_interrupt(&pulse_trains[i]));
+    }
     HarpCore::send_harp_reply(WRITE, msg.header.address);
 }
 
@@ -365,6 +483,8 @@ void reset_outputs()
     {
         cancel_pulse_train(&pulse_trains[i]);
         pulse_trains[i].output_mask = 1 << i;
+        pulse_trains[i].pin = DO0_PIN + i;
+        pulse_trains[i].slice = pwm_gpio_to_slice_num(DO0_PIN + i);
         for (size_t j = 0; j < 3; j++)
             app_regs.pulse_train[i][j] = 0;
     }
@@ -402,6 +522,10 @@ void configure_gpio(void)
     gpio_set_irq_enabled(13, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     gpio_set_irq_enabled(14, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true);
     reset_outputs();
+
+    // Wrap interrupts of every PWM slice share one handler.
+    irq_set_exclusive_handler(PWM_DEFAULT_IRQ_NUM(), pwm_wrap_callback);
+    irq_set_enabled(PWM_DEFAULT_IRQ_NUM(), true);
 }
 
 void enable_gpio(bool enabled)
@@ -520,7 +644,7 @@ void send_queued_event(const event_queue_item_t &event)
     {
         size_t index = event.address - PULSE_TRAIN_GP15_ADDRESS;
         pulse_train_t *pulse_train = &pulse_trains[index];
-        if (pulse_train->generation != event.value || pulse_train->alarm > 0)
+        if (pulse_train->generation != event.value || pulse_train->running)
             return;
         app_regs.pulse_train[index][0] = 0;
         HarpCore::send_harp_reply(EVENT, event.address, event.timestamp);
