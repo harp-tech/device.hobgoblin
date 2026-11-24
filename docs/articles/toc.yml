@@ -9,6 +9,7 @@
 - name: Tutorials
 - href: acquisition-and-control.md
 - href: reaction-time-task.md
+- href: closed-loop-systems.md
 - name: Development
 - href: modifying.md
 - href: firmware.md
